@@ -10,29 +10,37 @@ namespace engine
 {
 namespace input
 {
-namespace keyboard
-{
 
 typedef SDLKey Key;
 
-bool isPressed(Key k);
-bool isJustPressed(Key k);
-bool isJustReleased(Key k);
+class Keyboard
+{
+	public:
+		Keyboard();
+		~Keyboard();
+		
+		bool isPressed(Key k);
+		bool isJustPressed(Key k);
+		bool isJustReleased(Key k);
 
-std::vector<Key> getPressedKeys();
-std::vector<Key> getJustPressedKeys();
-std::vector<Key> getJustReleasedKeys();
+		std::vector<Key> getPressedKeys();
+		std::vector<Key> getJustPressedKeys();
+		std::vector<Key> getJustReleasedKeys();
 
-Uint16* getUnicodeText(int* length);
+		Uint16* getUnicodeText(int* length);
 
-/* private */
-void clearEvents();
-void addEvent(const SDL_Event& e);
+		void clearEvents();
+		void addEvent(const SDL_Event& e);
+		
+	private:
+		int m_numKeys;
+		bool* m_justPressedKeys;
+		bool* m_justReleasedKeys;
 
-void open();
-void close();
+		Uint16 m_unicodeText[SDLK_LAST];
+		int m_unicodeLength;
+};
 
-} // keyboard
 } // input
 } // engine
 

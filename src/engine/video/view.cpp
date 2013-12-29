@@ -37,31 +37,23 @@ void View::move(geometry::Vector2d move)
 	m_center += move;
 }
 
-void View::updateBorders()
+void View::updateBorders(geometry::Vector2d windowSize)
 {
-	m_left = m_center.getX() - (float) window::getWidth() / 2 / m_scale;
-	m_right = m_center.getX() + (float) window::getWidth() / 2 / m_scale;
-	m_bottom = m_center.getY() - (float) window::getHeight() / 2 / m_scale;
-	m_top = m_center.getY() + (float) window::getHeight() / 2 / m_scale;
-	m_width = (float) window::getWidth() / m_scale;
-	m_height = (float) window::getHeight() / m_scale;
+	float width = windowSize.getX();
+	float height = windowSize.getY();
+	m_left = m_center.getX() - width / 2 / m_scale;
+	m_right = m_center.getX() + width / 2 / m_scale;
+	m_bottom = m_center.getY() - height / 2 / m_scale;
+	m_top = m_center.getY() + height / 2 / m_scale;
+	m_width = width / m_scale;
+	m_height = height / m_scale;
 }
 
-float View::getRelativeX(int screenX) const
-{
-	return (float) m_left + (m_right - m_left) * ((float) screenX / video::window::getWidth());
-}
-
-float View::getRelativeY(int screenY) const
-{
-	return (float) m_bottom + (m_top - m_bottom) * ((float) screenY / video::window::getHeight());
-}
-
-engine::geometry::Vector2d View::getRelativePosition(int screenX, int screenY) const
+engine::geometry::Vector2d View::getRelativePosition(const geometry::Vector2d& windowPosition, const geometry::Vector2d& windowSize) const
 {
 	return engine::geometry::Vector2d(
-		(float) m_left + (m_right - m_left) * ((float) screenX / video::window::getWidth()),
-		(float) m_bottom + (m_top - m_bottom) * ((float) screenY / video::window::getHeight())
+		m_left + (m_right - m_left) * (windowPosition.getX() / windowSize.getX()),
+		m_bottom + (m_top - m_bottom) * (windowPosition.getY() / windowSize.getY())
 	);
 }
 

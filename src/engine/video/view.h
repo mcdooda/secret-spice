@@ -25,16 +25,14 @@ class View
 		inline float getLeft()   const { return m_left; }
 		inline float getRight()  const { return m_right; }
 		inline float getBottom() const { return m_bottom; }
-		inline float getTop()	const { return m_top; }
+		inline float getTop()	 const { return m_top; }
 
 		inline float getWidth()  const { return m_width; }
 		inline float getHeight() const { return m_height; }
 		
-		float getRelativeX(int screenX) const;
-		float getRelativeY(int screenY) const;
-		geometry::Vector2d getRelativePosition(int screenX, int screenY) const;
+		geometry::Vector2d getRelativePosition(const geometry::Vector2d& windowPosition, const geometry::Vector2d& windowSize) const;
 
-		void updateBorders();
+		void updateBorders(geometry::Vector2d windowSize);
 
 	private:
 

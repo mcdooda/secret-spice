@@ -7,39 +7,35 @@ namespace engine
 namespace random
 {
 
-static int seed;
+Random::Random()
+{
+	setSeed(time(NULL));
+}
 
-int rint(int min, int max)
+Random::~Random()
+{
+	
+}
+
+int Random::nextInt(int min, int max)
 {
 	return min + rand() % (max - min + 1);
 }
 
-float rfloat(float min, float max)
+float Random::nextFloat(float min, float max)
 {
 	return (float) rand() / RAND_MAX * (max - min) + min;
 }
 
-void resetSeed()
+void Random::resetSeed()
 {
+	setSeed(m_seed);
+}
+
+void Random::setSeed(int seed)
+{
+	m_seed = seed;
 	srand(seed);
-}
-
-void setSeed(int newSeed)
-{
-	srand(newSeed);
-}
-
-/* private */
-
-void open()
-{
-	seed = time(NULL);
-	srand(seed);
-}
-
-void close()
-{
-
 }
 
 } // random

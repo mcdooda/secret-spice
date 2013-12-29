@@ -1,15 +1,32 @@
 #ifndef ENGINE_ENGINE_H
 #define ENGINE_ENGINE_H
 
+#include "input/input.h"
+#include "time/time.h"
+#include "video/video.h"
+#include "audio/audio.h"
+#include "random/random.h"
+
 namespace engine
 {
 
-void open();
-void close();
+class Engine
+{
+	public:
+		Engine();
+		~Engine();
 
-/* private */
-void openSDL();
-void closeSDL();
+	private:
+		void openSDL();
+		void closeSDL();
+		
+	public:
+		input::Input* input;
+		time::Time* time;
+		video::Video* video;
+		audio::Audio* audio;
+		random::Random* random;
+};
 
 } // engine
 

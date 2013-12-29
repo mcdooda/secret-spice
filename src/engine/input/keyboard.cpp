@@ -5,43 +5,50 @@ namespace engine
 {
 namespace input
 {
-namespace keyboard
+
+Keyboard::Keyboard()
 {
-
-static int numKeys;
-static bool* justPressedKeys;
-static bool* justReleasedKeys;
-
-static Uint16 unicodeText[SDLK_LAST];
-static int unicodeLength = 0;
-
-bool isPressed(Key k)
-{
-	Uint8* pressedKeys = SDL_GetKeyState(NULL);
-	return (bool) pressedKeys[k];
+	SDL_EnableUNICODE(1);
+	SDL_GetKeyState(&m_numKeys);
+	m_justPressedKeys = new bool[m_numKeys];
+	m_justReleasedKeys = new bool[m_numKeys];
+	m_unicodeLength = 0;
+	clearEvents();
 }
 
-bool isJustPressed(Key k)
+Keyboard::~Keyboard()
 {
-	return justPressedKeys[k];
+	delete m_justPressedKeys;
+	delete m_justReleasedKeys;
 }
 
-bool isJustReleased(Key k)
+bool Keyboard::isPressed(Key k)
 {
-	return justReleasedKeys[k];
+	Uint8* m_pressedKeys = SDL_GetKeyState(NULL);
+	return (bool) m_pressedKeys[k];
 }
 
-Uint16* getUnicodeText(int* length)
+bool Keyboard::isJustPressed(Key k)
 {
-	*length = unicodeLength;
-	return unicodeText;
+	return m_justPressedKeys[k];
 }
 
-std::vector<Key> getPressedKeys()
+bool Keyboard::isJustReleased(Key k)
+{
+	return m_justReleasedKeys[k];
+}
+
+Uint16* Keyboard::getUnicodeText(int* length)
+{
+	*length = m_unicodeLength;
+	return m_unicodeText;
+}
+
+std::vector<Key> Keyboard::getPressedKeys()
 {
 	std::vector<Key> pressedKeysVector;
 	Uint8* pressedKeys = SDL_GetKeyState(NULL);
-	for (int k = 0; k < numKeys; k++)
+	for (int k = 0; k < m_numKeys; k++)
 	{
 		if (pressedKeys[k])
 			pressedKeysVector.push_back((Key) k);
@@ -49,74 +56,51 @@ std::vector<Key> getPressedKeys()
 	return pressedKeysVector;
 }
 
-std::vector<Key> getJustPressedKeys()
+std::vector<Key> Keyboard::getJustPressedKeys()
 {
 	std::vector<Key> justPressedKeysVector;
-	for (int k = 0; k < numKeys; k++)
+	for (int k = 0; k < m_numKeys; k++)
 	{
-		if (justPressedKeys[k])
+		if (m_justPressedKeys[k])
 			justPressedKeysVector.push_back((Key) k);
 	}
 	return justPressedKeysVector;
 }
 
-std::vector<Key> getJustReleasedKeys()
+std::vector<Key> Keyboard::getJustReleasedKeys()
 {
 	std::vector<Key> justReleasedKeysVector;
-	for (int k = 0; k < numKeys; k++)
+	for (int k = 0; k < m_numKeys; k++)
 	{
-		if (justReleasedKeys[k])
+		if (m_justReleasedKeys[k])
 			justReleasedKeysVector.push_back((Key) k);
 	}
 	return justReleasedKeysVector;
 }
 
-bool* getJustPressedKeys(int* length)
+void Keyboard::clearEvents()
 {
-	*length = numKeys;
-	return justPressedKeys;
+	memset(m_justPressedKeys, 0, m_numKeys * sizeof(bool));
+	memset(m_justReleasedKeys, 0, m_numKeys * sizeof(bool));
+	m_unicodeLength = 0;
 }
 
-/* private */
-void clearEvents()
-{
-	memset(justPressedKeys, 0, numKeys * sizeof(bool));
-	memset(justReleasedKeys, 0, numKeys * sizeof(bool));
-	unicodeLength = 0;
-}
-
-void addEvent(const SDL_Event& e)
+void Keyboard::addEvent(const SDL_Event& e)
 {
 	switch (e.type)
 	{
 		case SDL_KEYDOWN:
-		justPressedKeys[e.key.keysym.sym] = 1;
-		unicodeText[unicodeLength] = e.key.keysym.unicode;
-		unicodeLength++;
+		m_justPressedKeys[e.key.keysym.sym] = 1;
+		m_unicodeText[m_unicodeLength] = e.key.keysym.unicode;
+		m_unicodeLength++;
 		break;
 
 		case SDL_KEYUP:
-		justReleasedKeys[e.key.keysym.sym] = 1;
+		m_justReleasedKeys[e.key.keysym.sym] = 1;
 		break;
 	}
 }
 
-void open()
-{
-	SDL_EnableUNICODE(1);
-	SDL_GetKeyState(&numKeys);
-	justPressedKeys = new bool[numKeys];
-	justReleasedKeys = new bool[numKeys];
-	clearEvents();
-}
-
-void close()
-{
-	delete justPressedKeys;
-	delete justReleasedKeys;
-}
-
-} // keyboard
 } // input
 } // engine
 

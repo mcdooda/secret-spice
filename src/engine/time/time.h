@@ -6,23 +6,36 @@ namespace engine
 namespace time
 {
 
-void beginFrame();
-void endFrame();
-void setFrameRate(float rate);
+class Time
+{
+	public:
+		Time();
+		~Time();
+		
+		void beginFrame();
+		void endFrame();
+		void setFrameRate(float rate);
 
-void sleep(float duration);
-float getRealTime();
+		void sleep(float duration);
+		float getRealTime();
 
-void pause();
-void resume();
-bool isPaused();
+		void pause();
+		void resume();
+		bool isPaused();
 
-float getTime();
-float getFrameTime();
+		float getTime();
+		float getFrameTime();
+		
+	private:
+		bool m_timePaused;
+		float m_pauseTime;
+		float m_pauseRealTime;
+		float m_pauseElapsedTime;
 
-/* private */
-void open();
-void close();
+		float m_frameTime;
+		float m_beginFrameTime;
+		float m_frameDuration;
+};
 
 } // time
 } // engine

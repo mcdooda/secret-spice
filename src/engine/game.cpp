@@ -5,18 +5,18 @@ namespace engine
 
 Game::Game(std::string name)
 {
-	open();
-	video::window::open(
-		video::window::getDesktopWidth(),
-		video::window::getDesktopHeight(),
-		name,
-		true
-	);
+	engine = new Engine();
+	engine->video->window->open(engine->video->window->getDesktopSize(), name, true);
 }
 
 Game::~Game()
 {
-	close();
+	delete engine;
+}
+
+void Game::begin()
+{
+	
 }
 
 void Game::loop()
@@ -24,16 +24,22 @@ void Game::loop()
 	bool running = true;
 	while (running)
 	{
-		time::beginFrame();
-		video::beginFrame();
+		engine->time->beginFrame();
 		
-		input::poll();
+			engine->input->poll();
+			running = update();
 		
-		running = frame();
+			engine->video->beginFrame();
+				draw();
+			engine->video->endFrame();
 		
-		video::endFrame();
-		time::endFrame();
+		engine->time->endFrame();
 	}
+}
+
+void Game::end()
+{
+	
 }
 
 } // engine

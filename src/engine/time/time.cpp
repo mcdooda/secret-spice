@@ -6,88 +6,77 @@ namespace engine
 namespace time
 {
 
-static bool timePaused;
-static float pauseTime;
-static float pauseRealTime;
-static float pauseElapsedTime;
-
-static float frameTime;
-static float beginFrameTime;
-static float frameDuration;
-
-void beginFrame()
+Time::Time()
 {
-	beginFrameTime = getRealTime();
+	m_timePaused = false;
+	m_pauseElapsedTime = 0;
 }
 
-void endFrame()
+Time::~Time()
+{
+
+}
+
+void Time::beginFrame()
+{
+	m_beginFrameTime = getRealTime();
+}
+
+void Time::endFrame()
 {
 	float endFrameTime = getRealTime();
-	frameTime = endFrameTime - beginFrameTime;
-	if (frameTime < frameDuration)
+	m_frameTime = endFrameTime - m_beginFrameTime;
+	if (m_frameTime < m_frameDuration)
 	{
-		sleep(frameDuration - frameTime);
-		frameTime = frameDuration;
+		sleep(m_frameDuration - m_frameTime);
+		m_frameTime = m_frameDuration;
 	}
 }
 
-void setFrameRate(float rate)
+void Time::setFrameRate(float rate)
 {
-	frameDuration = 1.f / rate;
+	m_frameDuration = 1.f / rate;
 }
 
-void sleep(float duration)
+void Time::sleep(float duration)
 {
 	SDL_Delay(duration * 1000);
 }
 
-float getRealTime()
+float Time::getRealTime()
 {
 	return SDL_GetTicks() / 1000.f;
 }
 
-void pause()
+void Time::pause()
 {
-	if (!timePaused)
+	if (!m_timePaused)
 	{
-		pauseTime = getTime();
-		pauseRealTime = getRealTime();
-		timePaused = true;
+		m_pauseTime = getTime();
+		m_pauseRealTime = getRealTime();
+		m_timePaused = true;
 	}
 }
 
-void resume()
+void Time::resume()
 {
-	timePaused = false;
-	pauseElapsedTime += getRealTime() - pauseRealTime;
+	m_timePaused = false;
+	m_pauseElapsedTime += getRealTime() - m_pauseRealTime;
 }
 
-bool isPaused()
+bool Time::isPaused()
 {
-	return timePaused;
+	return m_timePaused;
 }
 
-float getTime()
+float Time::getTime()
 {
-	return timePaused ? pauseTime : getRealTime() - pauseElapsedTime;
+	return m_timePaused ? m_pauseTime : getRealTime() - m_pauseElapsedTime;
 }
 
-float getFrameTime()
+float Time::getFrameTime()
 {
-	return timePaused ? 0 : frameTime;
-}
-
-/* private */
-
-void open()
-{
-	timePaused = false;
-	pauseElapsedTime = 0;
-}
-
-void close()
-{
-
+	return m_timePaused ? 0 : m_frameTime;
 }
 
 } // time

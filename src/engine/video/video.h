@@ -1,17 +1,25 @@
 #ifndef ENGINE_VIDEO_VIDEO_H
 #define ENGINE_VIDEO_VIDEO_H
 
+#include "window.h"
+
 namespace engine
 {
 namespace video
 {
 
-void beginFrame();
-void endFrame();
+class Video
+{
+	public:
+		Video();
+		~Video();
+		
+		void beginFrame();
+		void endFrame();
 
-/* private */
-void open();
-void close();
+	public:
+		Window* window;
+};
 
 } // video
 } // engine

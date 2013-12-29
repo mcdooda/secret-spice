@@ -6,14 +6,21 @@ namespace engine
 namespace random
 {
 
-int rint(int min, int max);
-float rfloat(float min, float max);
-void resetSeed();
-void setSeed(int newSeed);
+class Random
+{
+	public:
+		Random();
+		~Random();
+		
+		int nextInt(int min, int max);
+		float nextFloat(float min, float max);
+		void resetSeed();
+		void setSeed(int seed);
+		
+	private:
+		int m_seed;
 
-/* private */
-void open();
-void close();
+};
 
 } // random
 } // engine

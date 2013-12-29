@@ -9,43 +9,41 @@ namespace engine
 namespace input
 {
 
-void poll()
+Input::Input(video::Video* video)
+{
+	keyboard = new Keyboard;
+	mouse = new Mouse(video);
+	window = new Window(video);
+}
+
+Input::~Input()
+{
+	delete keyboard;
+	delete mouse;
+	delete window;
+}
+
+void Input::poll()
 {
 	SDL_Event e;
-	keyboard::clearEvents();
-	mouse::clearEvents();
-	window::clearEvents();
+	keyboard->clearEvents();
+	mouse->clearEvents();
+	window->clearEvents();
 	while (SDL_PollEvent(&e))
 	{
-		keyboard::addEvent(e);
-		mouse::addEvent(e);
-		window::addEvent(e);
+		keyboard->addEvent(e);
+		mouse->addEvent(e);
+		window->addEvent(e);
 	}
 }
 
-void clearAll()
+void Input::clearAll()
 {
 	SDL_Event e;
 	while (SDL_PollEvent(&e));
-	keyboard::clearEvents();
-	mouse::clearEvents();
-	window::clearEvents();
-}
-
-/* private */
-
-void open()
-{
-	keyboard::open();
-	mouse::open();
-	window::open();
-}
-
-void close()
-{
-	keyboard::close();
-	mouse::close();
-	window::close();
+	keyboard->clearEvents();
+	mouse->clearEvents();
+	window->clearEvents();
 }
 
 } // input

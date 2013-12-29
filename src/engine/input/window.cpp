@@ -1,61 +1,43 @@
 #include "window.h"
-#include "../video/window.h"
+#include "../video/video.h"
 
 namespace engine
 {
 namespace input
 {
-namespace window
-{
 
-static bool windowClosed;
-static bool windowResized;
-
-bool closed()
+Window::Window(video::Video* video)
 {
-	return windowClosed;
+	this->video = video;
+	clearEvents();
 }
 
-bool resized()
+Window::~Window()
 {
-	return windowResized;
+	
 }
 
-/* private */
-
-void clearEvents()
+void Window::clearEvents()
 {
-	windowClosed = false;
-	windowResized = false;
+	m_closed = false;
+	m_resized = false;
 }
 
-void addEvent(const SDL_Event& e)
+void Window::addEvent(const SDL_Event& e)
 {
 	switch (e.type)
 	{
 		case SDL_QUIT:
-		windowClosed = true;
+		m_closed = true;
 		break;
 
 		case SDL_VIDEORESIZE:
-		windowResized = true;
-		video::window::setWidth(e.resize.w);
-		video::window::setHeight(e.resize.h);
+		m_resized = true;
+		video->window->setSize(geometry::Vector2d(e.resize.w, e.resize.h));
 		break;
 	}
 }
 
-void open()
-{
-	clearEvents();
-}
-
-void close()
-{
-
-}
-
-} // window
 } // input
 } // engine
 

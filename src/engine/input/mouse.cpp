@@ -1,129 +1,85 @@
 #include "mouse.h"
-#include "../video/window.h"
-#include "../video/view.h"
-
-#define NUM_BUTTONS 8
 
 namespace engine
 {
 namespace input
 {
-namespace mouse
+
+Mouse::Mouse(video::Video* video)
+{
+	this->video = video;
+	clearEvents();
+}
+
+Mouse::~Mouse()
 {
 
-static bool justPressedButtons[NUM_BUTTONS];
-static bool justReleasedButtons[NUM_BUTTONS];
+}
 
-static bool mouseMoved;
-static int mouseX;
-static int mouseY;
-
-bool isPressed(int button)
+bool Mouse::isPressed(int button)
 {
 	Uint8 buttonState = SDL_GetMouseState(NULL, NULL);
 	return buttonState & SDL_BUTTON(button);
 }
 
-bool isJustPressed(int button)
+bool Mouse::isJustPressed(int button)
 {
 	if (button < NUM_BUTTONS)
-		return justPressedButtons[button];
+		return m_justPressedButtons[button];
 
 	return false;
 }
 
-bool isJustReleased(int button)
+bool Mouse::isJustReleased(int button)
 {
 	if (button < NUM_BUTTONS)
-		return justReleasedButtons[button];
+		return m_justReleasedButtons[button];
 
 	return false;
 }
 
-bool moved()
+geometry::Vector2d Mouse::getViewPosition(const video::View& view)
 {
-	return mouseMoved;
+	return view.getRelativePosition(m_position, video->window->getSize());
 }
 
-int getX()
+void Mouse::clearEvents()
 {
-	return mouseX;
+	m_moved = false;
+	memset(m_justPressedButtons, 0, NUM_BUTTONS * sizeof(bool));
+	memset(m_justReleasedButtons, 0, NUM_BUTTONS * sizeof(bool));
 }
 
-int getY()
-{
-	return mouseY;
-}
-
-float getViewX()
-{
-	const video::View& view = video::window::getView();
-	return view.getRelativeX(mouseX);
-}
-
-float getViewY()
-{
-	const video::View& view = video::window::getView();
-	return view.getRelativeY(mouseY);
-}
-
-geometry::Vector2d getViewPosition()
-{
-	const video::View& view = video::window::getView();
-	return view.getRelativePosition(mouseX, mouseY);
-}
-
-/* private */
-
-void clearEvents()
-{
-	mouseMoved = false;
-	memset(justPressedButtons, 0, NUM_BUTTONS * sizeof(bool));
-	memset(justReleasedButtons, 0, NUM_BUTTONS * sizeof(bool));
-}
-
-void addEvent(const SDL_Event& e)
+void Mouse::addEvent(const SDL_Event& e)
 {
 	switch (e.type)
 	{
 		case SDL_MOUSEBUTTONDOWN:
-		mouseX = e.button.x;
-		mouseY = video::window::getHeight() - e.button.y;
+		m_position.setX(e.button.x);
+		m_position.setY(video->window->getSize().getY() - e.button.y);
 
 		if (e.button.button < NUM_BUTTONS)
-			justPressedButtons[e.button.button] = true;
+			m_justPressedButtons[e.button.button] = true;
 
 		break;
 
 		case SDL_MOUSEBUTTONUP:
-		mouseX = e.button.x;
-		mouseY = video::window::getHeight() - e.button.y;
+		m_position.setX(e.button.x);
+		m_position.setY(video->window->getSize().getY() - e.button.y);
 
 		if (e.button.button < NUM_BUTTONS)
-			justReleasedButtons[e.button.button] = true;
+			m_justReleasedButtons[e.button.button] = true;
 
 		break;
 
 		case SDL_MOUSEMOTION:
-		mouseX = e.button.x;
-		mouseY = video::window::getHeight() - e.button.y;
-		mouseMoved = true;
+		m_position.setX(e.button.x);
+		m_position.setY(video->window->getSize().getY() - e.button.y);
+		m_moved = true;
 		break;
-
 	}
 }
 
-void open()
-{
-	clearEvents();
-}
-
-void close()
-{
-
-}
-
-} // mouse
 } // input
 } // engine
 

@@ -1,42 +1,38 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
-#include <SDL/SDL.h>
 #include "window.h"
 
 namespace engine
 {
 namespace video
 {
-namespace window
+
+Window::Window() :
+	m_view(geometry::Vector2d(0, 0), 1)
 {
+	 
+}
 
-static int windowWidth;
-static int windowHeight;
-static int oldWindowWidth;
-static int oldWindowHeight;
-static bool fullScreen;
-static SDL_Surface* screen;
+Window::~Window()
+{
+	
+}
 
-static View windowView(geometry::Vector2d(0, 0), 1);
-
-void open(int width, int height, std::string name, bool full)
+void Window::open(geometry::Vector2d size, std::string name, bool fullScreen)
 {
 	int flags = SDL_OPENGL | SDL_GL_DOUBLEBUFFER | SDL_RESIZABLE;
 
-	if (full)
+	if (fullScreen)
 		flags |= SDL_FULLSCREEN;
 
-	screen = SDL_SetVideoMode(width, height, 32, flags);
+	m_screen = SDL_SetVideoMode(size.getX(), size.getY(), 32, flags);
 	SDL_WM_SetCaption(name.c_str(), name.c_str());
-	SDL_WarpMouse(width / 2, height / 2);
+	SDL_WarpMouse(size.getX() / 2, size.getY() / 2);
 
-	windowWidth = width;
-	windowHeight = height;
+	m_size = size;
+	m_oldSize = size;
 
-	oldWindowWidth = width;
-	oldWindowHeight = height;
-
-	fullScreen = full;
+	m_fullScreen = fullScreen;
 
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -47,9 +43,9 @@ void open(int width, int height, std::string name, bool full)
 	resize();
 }
 
-void toggleFullScreen()
+void Window::toggleFullScreen()
 {
-	SDL_WM_ToggleFullScreen(screen);
+	SDL_WM_ToggleFullScreen(m_screen);
 	/*
 	fullScreen = !fullScreen;
 
@@ -79,71 +75,33 @@ void toggleFullScreen()
 	*/
 }
 
-bool isFullScreen()
-{
-	return fullScreen;
-}
-
-int getWidth()
-{
-	return windowWidth;
-}
-
-int getHeight()
-{
-	return windowHeight;
-}
-
-int getDesktopWidth()
+geometry::Vector2d Window::getDesktopSize()
 {
 	const SDL_VideoInfo* videoInfo = SDL_GetVideoInfo();
-	return videoInfo->current_w;
+	return geometry::Vector2d(videoInfo->current_w, videoInfo->current_h);
 }
 
-int getDesktopHeight()
+void Window::setView(View view)
 {
-	const SDL_VideoInfo* videoInfo = SDL_GetVideoInfo();
-	return videoInfo->current_h;
-}
-
-void setView(View view)
-{
-	windowView = view;
-	windowView.updateBorders();
+	m_view = view;
+	m_view.updateBorders(m_size);
 	glLoadIdentity();
-	gluOrtho2D(windowView.getLeft(), windowView.getRight(), windowView.getBottom(), windowView.getTop());
+	gluOrtho2D(m_view.getLeft(), m_view.getRight(), m_view.getBottom(), m_view.getTop());
 }
 
-const View& getView()
+void Window::setInterfaceView()
 {
-	return windowView;
-}
-
-void setInterfaceView()
-{
-	windowView = View(geometry::Vector2d((float) windowWidth / 2, (float) windowHeight / 2), 1);
+	m_view = View(geometry::Vector2d(m_size.getX() / 2, m_size.getY() / 2), 1);
 	glLoadIdentity();
-	gluOrtho2D(0, windowWidth, 0, windowHeight);
+	gluOrtho2D(0, m_size.getX(), 0, m_size.getY());
 }
 
-void resize()
+void Window::resize()
 {
-	glViewport(0, 0, windowWidth, windowHeight);
-	setView(windowView);
+	glViewport(0, 0, m_size.getX(), m_size.getY());
+	setView(m_view);
 }
 
-/* private */
-void setWidth(int width)
-{
-	windowWidth = width;
-}
-
-void setHeight(int height)
-{
-	windowHeight = height;
-}
-
-} // window
 } // video
 } // engine
 

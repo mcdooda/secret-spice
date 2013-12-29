@@ -13,7 +13,8 @@ class Game : public engine::Game
 		virtual ~Game();
 		
 		virtual void begin();
-		virtual bool frame();
+		virtual bool update();
+		virtual void draw();
 		virtual void end();
 };
 

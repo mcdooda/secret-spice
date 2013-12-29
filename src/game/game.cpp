@@ -18,27 +18,22 @@ Game::~Game()
 
 void Game::begin()
 {
-	video::View view(
-		geometry::Vector2d(
-			video::window::getWidth() / 2,
-			video::window::getHeight() / 2
-		),
-		1
-	);
-	video::window::setView(view);
+	video::View view(engine->video->window->getSize() / 2, 1);
+	engine->video->window->setView(view);
 }
 
-bool Game::frame()
+bool Game::update()
 {
-	bool keepRunning = !input::keyboard::isJustPressed(K(ESCAPE));
-	
-	int mouseX = input::mouse::getX();
-	int mouseY = input::mouse::getY();
-	
-	geometry::Circle circle(geometry::Vector2d(mouseX, mouseY), 20);
-	circle.show();
-	
+	bool keepRunning = !engine->input->keyboard->isJustPressed(K(ESCAPE));
 	return keepRunning;
+}
+
+void Game::draw()
+{
+	engine::geometry::Vector2d mousePosition = engine->input->mouse->getPosition();
+	
+	geometry::Circle circle(mousePosition, 20);
+	circle.show();
 }
 
 void Game::end()

@@ -2,37 +2,45 @@
 #define ENGINE_VIDEO_WINDOW_H
 
 #include <string>
+#include <SDL/SDL.h>
 #include "view.h"
 
 namespace engine
 {
 namespace video
 {
-namespace window
+
+class Window
 {
+	public:
+		Window();
+		~Window();
+		
+		void open(geometry::Vector2d size, std::string name, bool fullScreen);
 
-void open(int width, int height, std::string name, bool full);
+		void toggleFullScreen();
+		
+		inline bool isFullScreen() const { return m_fullScreen; }
 
-void toggleFullScreen();
-bool isFullScreen();
+		inline const geometry::Vector2d& getSize() { return m_size; }
+		inline void setSize(const geometry::Vector2d& size) { m_size = size; }
 
-int getWidth();
-int getHeight();
+		geometry::Vector2d getDesktopSize();
 
-int getDesktopWidth();
-int getDesktopHeight();
+		void setView(View view);
+		inline const View& getView() const { return m_view; }
+		void setInterfaceView();
 
-void setView(View view);
-const View& getView();
-void setInterfaceView();
+		void resize();
+	
+	private:
+		geometry::Vector2d m_size;
+		geometry::Vector2d m_oldSize;
+		bool m_fullScreen;
+		SDL_Surface* m_screen;
+		View m_view;
+};
 
-void resize();
-
-/* private */
-void setHeight(int height);
-void setWidth(int width);
-
-} // window
 } // video
 } // engine
 

@@ -8,27 +8,27 @@ namespace engine
 namespace video
 {
 
-void beginFrame()
+Video::Video()
+{
+	Text::open();
+	window = new Window;
+}
+
+Video::~Video()
+{
+	Text::close();
+	delete window;
+}
+
+void Video::beginFrame()
 {
 	glClear(GL_COLOR_BUFFER_BIT);
 }
 
-void endFrame()
+void Video::endFrame()
 {
 	glFlush();
 	SDL_GL_SwapBuffers();
-}
-
-/* private */
-
-void open()
-{
-	Text::open();
-}
-
-void close()
-{
-	Text::close();
 }
 
 } // video

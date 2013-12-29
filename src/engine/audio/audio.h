@@ -6,10 +6,12 @@ namespace engine
 namespace audio
 {
 
-/* private */
-
-void open();
-void close();
+class Audio
+{
+	public:
+		Audio();
+		~Audio();
+};
 
 } // audio
 } // engine

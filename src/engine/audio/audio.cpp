@@ -5,14 +5,14 @@ namespace engine
 namespace audio
 {
 
-void open()
+Audio::Audio()
 {
-
+	
 }
 
-void close()
+Audio::~Audio()
 {
-
+	
 }
 
 } // audio

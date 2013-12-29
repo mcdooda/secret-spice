@@ -10,33 +10,34 @@
 namespace engine
 {
 
-void open()
+Engine::Engine()
 {
 	openSDL();
-	input::open();
-	time::open();
-	video::open();
-	audio::open();
-	random::open();
+	time = new time::Time;
+	video = new video::Video;
+	audio = new audio::Audio;
+	random = new random::Random;
+	input = new input::Input(video);
 }
 
-void close()
+Engine::~Engine()
 {
 	closeSDL();
-	input::close();
-	time::close();
-	video::close();
-	audio::close();
-	random::close();
+	delete time;
+	delete video;
+	delete audio;
+	delete random;
+	delete input;
 }
 
 /* private */
-void openSDL()
+
+void Engine::openSDL()
 {
 	SDL_Init(SDL_INIT_VIDEO);
 }
 
-void closeSDL()
+void Engine::closeSDL()
 {
 	SDL_Quit();
 }
