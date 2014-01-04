@@ -15,8 +15,8 @@ class Window
 		Window(video::Video* video);
 		~Window();
 		
-		inline bool closed() const { return m_closed; }
-		inline bool resized() const { return m_resized; }
+		inline bool isClosed() const { return m_closed; }
+		inline bool isResized() const { return m_resized; }
 
 		void clearEvents();
 		void addEvent(const SDL_Event& e);

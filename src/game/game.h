@@ -16,6 +16,9 @@ class Game : public engine::Game
 		virtual bool update();
 		virtual void draw();
 		virtual void end();
+		
+	private:
+		geometry::Circle circle;
 };
 
 } // game

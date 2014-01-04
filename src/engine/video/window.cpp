@@ -91,9 +91,7 @@ void Window::setView(View view)
 
 void Window::setInterfaceView()
 {
-	m_view = View(geometry::Vector2d(m_size.getX() / 2, m_size.getY() / 2), 1);
-	glLoadIdentity();
-	gluOrtho2D(0, m_size.getX(), 0, m_size.getY());
+	setView(View(m_size / 2, 1));
 }
 
 void Window::resize()

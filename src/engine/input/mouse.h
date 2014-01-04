@@ -24,11 +24,9 @@ class Mouse
 		bool isJustPressed(int button);
 		bool isJustReleased(int button);
 
-		inline bool moved() const { return m_moved; }
+		inline bool justMoved() const { return m_moved; }
 
 		inline geometry::Vector2d getPosition() const { return m_position; }
-
-		geometry::Vector2d getViewPosition(const video::View& view);
 
 		void clearEvents();
 		void addEvent(const SDL_Event& e);

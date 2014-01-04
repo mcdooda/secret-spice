@@ -13,9 +13,11 @@ class Polygon
 {
 	public:
 		Polygon(const std::vector<Vector2d>& vertices);
-		~Polygon();
+		Polygon(const Polygon& polygon);
+		void operator=(const Polygon& polygon);
+		virtual ~Polygon();
 		
-		void show();
+		void draw();
 		
 	protected:
 		Polygon();
@@ -24,7 +26,7 @@ class Polygon
 		
 	protected:
 		float* m_vertices;
-		int m_numVertices;
+		unsigned int m_numVertices;
 };
 
 } // geometry

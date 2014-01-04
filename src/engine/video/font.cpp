@@ -1,4 +1,3 @@
-#include <iostream>
 #include "font.h"
 
 namespace engine

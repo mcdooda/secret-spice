@@ -38,11 +38,6 @@ bool Mouse::isJustReleased(int button)
 	return false;
 }
 
-geometry::Vector2d Mouse::getViewPosition(const video::View& view)
-{
-	return view.getRelativePosition(m_position, video->window->getSize());
-}
-
 void Mouse::clearEvents()
 {
 	m_moved = false;

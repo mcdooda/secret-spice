@@ -1,4 +1,3 @@
-#include <iostream>
 #include "view.h"
 #include "window.h"
 

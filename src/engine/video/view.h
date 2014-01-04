@@ -16,6 +16,7 @@ class View
 
 		void zoom(float factor, float minOrMax);
 		void move(geometry::Vector2d position);
+		
 		inline void setCenter(geometry::Vector2d center) { m_center = center; }
 		inline void setScale(float scale) { m_scale = scale; }
 
