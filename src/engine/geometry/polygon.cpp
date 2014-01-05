@@ -1,5 +1,5 @@
 #include <cstring>
-#include <GL/gl.h>
+#include <GL/glew.h>
 #include "polygon.h"
 
 namespace engine

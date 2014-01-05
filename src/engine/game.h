@@ -10,6 +10,9 @@
 #include "geometry/circle.h"
 #include "geometry/rectangle.h"
 
+// video
+#include "video/shader.h"
+
 namespace engine
 {
 

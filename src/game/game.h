@@ -19,6 +19,7 @@ class Game : public engine::Game
 		
 	private:
 		geometry::Circle circle;
+		video::Shader shader;
 };
 
 } // game

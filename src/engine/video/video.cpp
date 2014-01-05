@@ -1,4 +1,5 @@
-#include <GL/gl.h>
+#include <iostream>
+#include <GL/glew.h>
 #include <SDL/SDL.h>
 #include "video.h"
 #include "text.h"
@@ -10,6 +11,11 @@ namespace video
 
 Video::Video()
 {
+	if (glewInit() != GLEW_OK)
+	{
+		std::cerr << "Fatal: glewInit failed" << std::endl;
+		exit(1);
+	}
 	Text::open();
 	window = new Window;
 }

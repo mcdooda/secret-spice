@@ -18,7 +18,7 @@ Text::Text(std::string string, Font* font, Color color) :
 		load();
 		
 	else
-		std::cout << "error in TTF_RenderText_Blended(" << string.c_str() << ") : " << TTF_GetError() << std::endl;
+		std::cerr << "Warning: error in TTF_RenderText_Blended(" << string.c_str() << ") : " << TTF_GetError() << std::endl;
 }
 
 Text::~Text()

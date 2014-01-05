@@ -1,5 +1,4 @@
-#include <GL/gl.h>
-#include <GL/glu.h>
+#include <GL/glew.h>
 #include "window.h"
 
 namespace engine

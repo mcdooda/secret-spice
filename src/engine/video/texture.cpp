@@ -1,8 +1,7 @@
 #include <iostream>
 #include <SDL/SDL.h>
 #include <SDL/SDL_image.h>
-#include <GL/gl.h>
-#include <GL/glu.h>
+#include <GL/glew.h>
 #include "texture.h"
 
 namespace engine
@@ -19,7 +18,7 @@ Texture::Texture(std::string filename) :
 		load();
 		
 	else
-		std::cout << "error in IMG_Load(" << filename.c_str() << ") : " << IMG_GetError() << std::endl;
+		std::cerr << "Warning: error in IMG_Load(" << filename.c_str() << ") : " << IMG_GetError() << std::endl;
 }
 
 Color Texture::getPixel(int x, int y)
