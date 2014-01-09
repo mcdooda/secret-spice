@@ -1,3 +1,4 @@
+#include <iostream>
 #include <GL/glew.h>
 #include "window.h"
 
@@ -25,6 +26,14 @@ void Window::open(geometry::Vector2d size, std::string name, bool fullScreen)
 		flags |= SDL_FULLSCREEN;
 
 	m_screen = SDL_SetVideoMode(size.getX(), size.getY(), 32, flags);
+	
+	int err = glewInit();
+	if (err != GLEW_OK)
+	{
+		std::cerr << "Fatal: glewInit failed: " << glewGetErrorString(err) << std::endl;
+		exit(1);
+	}
+	
 	SDL_WM_SetCaption(name.c_str(), name.c_str());
 	SDL_WarpMouse(size.getX() / 2, size.getY() / 2);
 
