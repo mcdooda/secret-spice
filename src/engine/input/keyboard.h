@@ -2,7 +2,7 @@
 #define ENGINE_INPUT_KEYBOARD_H
 
 #include <vector>
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 
 #define K(k) SDLK_##k
 
@@ -11,7 +11,7 @@ namespace engine
 namespace input
 {
 
-typedef SDLKey Key;
+typedef SDL_Keycode Key;
 
 class Keyboard
 {
@@ -27,8 +27,6 @@ class Keyboard
 		std::vector<Key> getJustPressedKeys();
 		std::vector<Key> getJustReleasedKeys();
 
-		Uint16* getUnicodeText(int* length);
-
 		void clearEvents();
 		void addEvent(const SDL_Event& e);
 		
@@ -36,9 +34,6 @@ class Keyboard
 		int m_numKeys;
 		bool* m_justPressedKeys;
 		bool* m_justReleasedKeys;
-
-		Uint16 m_unicodeText[SDLK_LAST];
-		int m_unicodeLength;
 };
 
 } // input

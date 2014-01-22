@@ -1,42 +1,46 @@
-#ifndef ENGINE_VIDEO_SHADER_H
-#define ENGINE_VIDEO_SHADER_H
+#ifndef ENGINE_VIDEO_PROGRAM_H
+#define ENGINE_VIDEO_PROGRAM_H
 
 #include <string>
+#include "uniform.h"
 
 namespace engine
 {
 namespace video
 {
 
-class Shader
+class Program
 {
 	public:
-		Shader();
-		~Shader();
+		Program();
+		~Program();
 		
 		void load(std::string fragmentShader, std::string vertexShader);
+		
+		inline bool isValid() const { return m_valid; }
 		
 		void use();
 		
 		int getAttribLocation(std::string attribName);
-		int getUniformLocation(std::string uniformName);
+		Uniform getUniform(std::string uniformName);
 		
 	private:
 		int compileProgram(int fragmentShaderId, int vertexShaderId);
 		int compileShader(std::string shader, int shaderType);
 		
 		void checkProgram(int programId);
-		void checkShader(int shaderId);
+		void checkShader(std::string shaderFile, int shaderId);
 		
-		std::string readCode(std::string shader);
+		const char* readCode(std::string shader);
 		
 	private:
 		int m_programId;
+		bool m_valid;
 };
 
 } // video
 } // engine
 
-#endif // ENGINE_VIDEO_SHADER_H
+#endif // ENGINE_VIDEO_PROGRAM_H
 
 

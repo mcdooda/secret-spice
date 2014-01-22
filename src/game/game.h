@@ -18,8 +18,8 @@ class Game : public engine::Game
 		virtual void end();
 		
 	private:
-		geometry::Circle circle;
-		video::Shader shader;
+		geometry::Circle circle1;
+		geometry::Circle circle2;
 };
 
 } // game

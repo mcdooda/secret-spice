@@ -6,9 +6,9 @@ namespace engine
 namespace input
 {
 
-Window::Window(video::Video* video)
+Window::Window(video::Window* videoWindow) :
+	m_videoWindow(videoWindow)
 {
-	this->video = video;
 	clearEvents();
 }
 
@@ -31,9 +31,14 @@ void Window::addEvent(const SDL_Event& e)
 		m_closed = true;
 		break;
 
-		case SDL_VIDEORESIZE:
-		m_resized = true;
-		video->window->setSize(geometry::Vector2d(e.resize.w, e.resize.h));
+		case SDL_WINDOWEVENT:
+		switch (e.window.event)
+		{
+			case SDL_WINDOWEVENT_RESIZED:
+			m_resized = true;
+			m_videoWindow->resized(geometry::Vector2(e.window.data1, e.window.data2));
+			break;
+		}
 		break;
 	}
 }

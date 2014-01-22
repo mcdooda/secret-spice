@@ -1,5 +1,5 @@
 #include <GL/glew.h>
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 #include "video.h"
 #include "text.h"
 
@@ -22,13 +22,12 @@ Video::~Video()
 
 void Video::beginFrame()
 {
-	glClear(GL_COLOR_BUFFER_BIT);
+	window->beginFrame();
 }
 
 void Video::endFrame()
 {
-	glFlush();
-	SDL_GL_SwapBuffers();
+	window->endFrame();
 }
 
 } // video

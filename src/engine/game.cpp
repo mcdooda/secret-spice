@@ -6,7 +6,7 @@ namespace engine
 Game::Game(std::string name)
 {
 	engine = new Engine();
-	engine->video->window->open(engine->video->window->getDesktopSize() / 2, name, false);
+	engine->video->window->open(engine->video->window->getDesktopSize() / 2, name, false, true);
 	engine->video->window->setInterfaceView();
 }
 

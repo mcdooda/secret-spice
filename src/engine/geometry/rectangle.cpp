@@ -5,13 +5,13 @@ namespace engine
 namespace geometry
 {
 
-Rectangle::Rectangle(Vector2d position, Vector2d size)
+Rectangle::Rectangle(Vector2 position, Vector2 size)
 {
-	std::vector<Vector2d> vertices;
+	std::vector<Vector2> vertices;
 	vertices.push_back(position);
-	vertices.push_back(Vector2d(position.getX() + size.getX(), position.getY()));
+	vertices.push_back(Vector2(position.getX() + size.getX(), position.getY()));
 	vertices.push_back(position + size);
-	vertices.push_back(Vector2d(position.getX(), position.getY() + size.getY()));
+	vertices.push_back(Vector2(position.getX(), position.getY() + size.getY()));
 	initVertices(vertices);
 }
 

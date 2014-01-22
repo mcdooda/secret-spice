@@ -7,7 +7,7 @@ namespace engine
 namespace geometry
 {
 
-Polygon::Polygon(const std::vector<Vector2d>& vertices) :
+Polygon::Polygon(const std::vector<Vector2>& vertices) :
 	m_vertices(NULL),
 	m_numVertices(0)
 {
@@ -31,12 +31,14 @@ Polygon::~Polygon()
 	delete m_vertices;
 }
 
-void Polygon::draw()
+void Polygon::draw(int vertexAttrib)
 {
 	if (m_numVertices > 0)
 	{
-		glVertexPointer(2, GL_FLOAT, 0, m_vertices);
+		glEnableVertexAttribArray(vertexAttrib);
+		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, m_vertices);
 		glDrawArrays(GL_POLYGON, 0, m_numVertices);
+		glDisableVertexAttribArray(vertexAttrib);
     }
 }
 
@@ -47,7 +49,7 @@ Polygon::Polygon() :
 	
 }
 
-void Polygon::initVertices(const std::vector<Vector2d>& vertices)
+void Polygon::initVertices(const std::vector<Vector2>& vertices)
 {
 	if (vertices.size() != m_numVertices)
 	{
@@ -56,7 +58,7 @@ void Polygon::initVertices(const std::vector<Vector2d>& vertices)
 		m_vertices = new float[m_numVertices * 2];
 	}
 	int i = 0;
-	for (std::vector<Vector2d>::const_iterator it = vertices.begin(); it != vertices.end(); it++)
+	for (std::vector<Vector2>::const_iterator it = vertices.begin(); it != vertices.end(); it++)
 	{
 		m_vertices[i * 2]     = it->getX();
 		m_vertices[i * 2 + 1] = it->getY();

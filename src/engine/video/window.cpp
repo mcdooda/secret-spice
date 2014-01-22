@@ -7,8 +7,7 @@ namespace engine
 namespace video
 {
 
-Window::Window() :
-	m_view(geometry::Vector2d(0, 0), 1)
+Window::Window()
 {
 	 
 }
@@ -18,14 +17,21 @@ Window::~Window()
 	
 }
 
-void Window::open(geometry::Vector2d size, std::string name, bool fullScreen)
+void Window::open(geometry::Vector2 size, std::string name, bool fullScreen, bool vsync)
 {
-	int flags = SDL_OPENGL | SDL_GL_DOUBLEBUFFER | SDL_RESIZABLE;
-
+	int windowFlags = SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE;
+	
 	if (fullScreen)
-		flags |= SDL_FULLSCREEN;
-
-	m_screen = SDL_SetVideoMode(size.getX(), size.getY(), 32, flags);
+		windowFlags |= SDL_WINDOW_FULLSCREEN;
+	
+	m_window = SDL_CreateWindow(name.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, size.getX(), size.getY(), windowFlags);
+	
+	int rendererFlags = 0;
+	
+	if (vsync)
+		rendererFlags |= SDL_RENDERER_PRESENTVSYNC;
+	
+	m_renderer = SDL_CreateRenderer(m_window, -1, rendererFlags);
 	
 	int err = glewInit();
 	if (err != GLEW_OK)
@@ -34,13 +40,10 @@ void Window::open(geometry::Vector2d size, std::string name, bool fullScreen)
 		exit(1);
 	}
 	
-	SDL_WM_SetCaption(name.c_str(), name.c_str());
-	SDL_WarpMouse(size.getX() / 2, size.getY() / 2);
-
-	m_size = size;
-	m_oldSize = size;
+	SDL_WarpMouseInWindow(m_window, size.getX() / 2, size.getY() / 2);
 
 	m_fullScreen = fullScreen;
+	m_vsync = vsync;
 
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -48,64 +51,64 @@ void Window::open(geometry::Vector2d size, std::string name, bool fullScreen)
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	resize();
+	initSize(size);
 }
 
 void Window::toggleFullScreen()
 {
-	SDL_WM_ToggleFullScreen(m_screen);
-	/*
-	fullScreen = !fullScreen;
-
-	int flags = SDL_OPENGL | SDL_GL_DOUBLEBUFFER | SDL_RESIZABLE;
-
-	int width;
-	int height;
-
-	if (fullScreen)
+	m_fullScreen = !m_fullScreen;
+	geometry::Vector2 desktopSize = getDesktopSize();
+	if (m_fullScreen)
 	{
-		flags |= SDL_FULLSCREEN;
-		oldWindowWidth = windowWidth;
-		oldWindowHeight = windowHeight;
-		width = getDesktopWidth();
-		height = getDesktopHeight();
+		SDL_SetWindowSize(m_window, desktopSize.getX(), desktopSize.getY());
+		SDL_SetWindowFullscreen(m_window, SDL_WINDOW_FULLSCREEN);
 	}
 	else
 	{
-		width = oldWindowWidth;
-		height = oldWindowHeight;
+		SDL_SetWindowSize(m_window, desktopSize.getX() / 2, desktopSize.getY() / 2);
+		SDL_SetWindowFullscreen(m_window, 0);
 	}
-
-	SDL_FreeSurface(screen);
-	screen = SDL_SetVideoMode(width, height, 32, flags);
-
-	resize();
-	*/
 }
 
-geometry::Vector2d Window::getDesktopSize()
+void Window::resized(const geometry::Vector2& size)
 {
-	const SDL_VideoInfo* videoInfo = SDL_GetVideoInfo();
-	return geometry::Vector2d(videoInfo->current_w, videoInfo->current_h);
+	m_size = size;
+	glViewport(0, 0, m_size.getX(), m_size.getY());
+	setView(m_view);
+}
+
+geometry::Vector2 Window::getDesktopSize()
+{
+	SDL_DisplayMode desktopDisplayMode;
+	SDL_GetDesktopDisplayMode(0, &desktopDisplayMode);
+	return geometry::Vector2(desktopDisplayMode.w, desktopDisplayMode.h);
 }
 
 void Window::setView(View view)
 {
 	m_view = view;
-	m_view.updateBorders(m_size);
-	glLoadIdentity();
-	gluOrtho2D(m_view.getLeft(), m_view.getRight(), m_view.getBottom(), m_view.getTop());
+	m_view.updateProjectionMatrix(m_size);
 }
 
 void Window::setInterfaceView()
 {
-	setView(View(m_size / 2, 1));
+	setView(View());
 }
 
-void Window::resize()
+void Window::beginFrame()
 {
-	glViewport(0, 0, m_size.getX(), m_size.getY());
-	setView(m_view);
+	glClear(GL_COLOR_BUFFER_BIT);
+}
+
+void Window::endFrame()
+{
+	glFlush();
+	SDL_RenderPresent(m_renderer);
+}
+
+void Window::initSize(const geometry::Vector2& size)
+{
+	resized(size);
 }
 
 } // video

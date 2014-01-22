@@ -1,4 +1,4 @@
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 #include "engine.h"
 
 #include "input/input.h"
@@ -17,7 +17,7 @@ Engine::Engine()
 	video = new video::Video;
 	audio = new audio::Audio;
 	random = new random::Random;
-	input = new input::Input(video);
+	input = new input::Input(video->window);
 }
 
 Engine::~Engine()

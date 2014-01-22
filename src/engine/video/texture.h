@@ -2,8 +2,8 @@
 #define ENGINE_VIDEO_TEXTURE_H
 
 #include <string>
-#include <SDL/SDL.h>
-#include "../geometry/vector2d.h"
+#include <SDL2/SDL.h>
+#include "../geometry/vector2.h"
 #include "color.h"
 
 namespace engine
@@ -19,7 +19,7 @@ class Texture
 		inline unsigned int getId() const { return m_id; }
 		inline unsigned int getWidth() const { return m_surface->w; }
 		inline unsigned int getHeight() const { return m_surface->h; }
-		inline geometry::Vector2d getDimensions() const { return geometry::Vector2d(m_surface->w, m_surface->h); }
+		inline geometry::Vector2 getDimensions() const { return geometry::Vector2(m_surface->w, m_surface->h); }
 
 		inline const std::string& getPath() const { return m_path; }
 		

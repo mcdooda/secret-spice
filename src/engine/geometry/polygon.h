@@ -2,7 +2,7 @@
 #define ENGINE_VIDEO_POLYGON_H
 
 #include <vector>
-#include "vector2d.h"
+#include "vector2.h"
 
 namespace engine
 {
@@ -12,17 +12,17 @@ namespace geometry
 class Polygon
 {
 	public:
-		Polygon(const std::vector<Vector2d>& vertices);
+		Polygon(const std::vector<Vector2>& vertices);
 		Polygon(const Polygon& polygon);
 		void operator=(const Polygon& polygon);
 		virtual ~Polygon();
 		
-		void draw();
+		void draw(int vertexAttrib);
 		
 	protected:
 		Polygon();
 		
-		void initVertices(const std::vector<Vector2d>& vertices);
+		void initVertices(const std::vector<Vector2>& vertices);
 		
 	protected:
 		float* m_vertices;

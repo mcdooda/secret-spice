@@ -1,7 +1,7 @@
 #ifndef ENGINE_INPUT_WINDOW_H
 #define ENGINE_INPUT_WINDOW_H
 
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 #include "../video/video.h"
 
 namespace engine
@@ -12,7 +12,7 @@ namespace input
 class Window
 {
 	public:
-		Window(video::Video* video);
+		Window(video::Window* videoWindow);
 		~Window();
 		
 		inline bool isClosed() const { return m_closed; }
@@ -25,7 +25,7 @@ class Window
 		bool m_closed;
 		bool m_resized;
 		
-		video::Video* video;
+		video::Window* m_videoWindow;
 };
 
 } // input

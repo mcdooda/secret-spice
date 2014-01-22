@@ -1,4 +1,4 @@
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 #include "time.h"
 
 namespace engine
@@ -10,6 +10,7 @@ Time::Time()
 {
 	m_timePaused = false;
 	m_pauseElapsedTime = 0;
+	setFrameRate(60.0f);
 }
 
 Time::~Time()

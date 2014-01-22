@@ -11,7 +11,8 @@
 #include "geometry/rectangle.h"
 
 // video
-#include "video/shader.h"
+#include "video/program.h"
+#include "video/color.h"
 
 namespace engine
 {
@@ -40,6 +41,7 @@ class Game
 		
 	protected:
 		Engine* engine;
+		video::Program program;
 };
 
 } // engine

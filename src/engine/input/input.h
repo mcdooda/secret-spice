@@ -14,7 +14,7 @@ namespace input
 class Input
 {
 	public:
-		Input(video::Video* video);
+		Input(video::Window* videoWindow);
 		~Input();
 		
 		void poll();

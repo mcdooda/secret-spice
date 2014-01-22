@@ -8,7 +8,8 @@ file(
     src/*
 )
 
-set(CMAKE_CXX_FLAGS "-g -Wall")
+set(CMAKE_CXX_FLAGS "-g -Wall -O0")
+#set(CMAKE_CXX_FLAGS "-O3")
 
 add_executable(
     beatshapt
@@ -17,9 +18,9 @@ add_executable(
 
 target_link_libraries(
     beatshapt
-    SDL
-    SDL_image
-    SDL_ttf
+    SDL2
+    SDL2_image
+    SDL2_ttf
     GL
     GLU
     GLEW

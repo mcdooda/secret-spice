@@ -1,8 +1,8 @@
 #ifndef ENGINE_INPUT_MOUSE_H
 #define ENGINE_INPUT_MOUSE_H
 
-#include <SDL/SDL.h>
-#include "../geometry/vector2d.h"
+#include <SDL2/SDL.h>
+#include "../geometry/vector2.h"
 #include "../video/video.h"
 #include "../video/view.h"
 
@@ -17,7 +17,7 @@ namespace input
 class Mouse
 {
 	public:
-		Mouse(video::Video* video);
+		Mouse(video::Window* videoWindow);
 		~Mouse();
 		
 		bool isPressed(int button);
@@ -26,7 +26,7 @@ class Mouse
 
 		inline bool justMoved() const { return m_moved; }
 
-		inline geometry::Vector2d getPosition() const { return m_position; }
+		inline geometry::Vector2 getPosition() const { return m_position; }
 
 		void clearEvents();
 		void addEvent(const SDL_Event& e);
@@ -36,9 +36,9 @@ class Mouse
 		bool m_justReleasedButtons[NUM_BUTTONS];
 
 		bool m_moved;
-		geometry::Vector2d m_position;
+		geometry::Vector2 m_position;
 		
-		video::Video* video;
+		video::Window* m_videoWindow;
 
 };
 

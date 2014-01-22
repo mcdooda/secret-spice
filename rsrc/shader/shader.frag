@@ -1,10 +1,12 @@
 #version 150
 
+uniform vec4 color;
+
 out vec4 outBuffer;
 
 void main()
 {
-	outBuffer = vec4(1.0, 0.0, 0.0, 1.0);
+	outBuffer = color;
 }
 
 

@@ -7,7 +7,7 @@ namespace engine
 namespace geometry
 {
 
-Circle::Circle(Vector2d center, float radius) : Polygon(),
+Circle::Circle(Vector2 center, float radius) : Polygon(),
 	m_center(center),
 	m_radius(radius)
 {
@@ -19,7 +19,7 @@ Circle::Circle() : Polygon()
 	
 }
 
-void Circle::setCenter(Vector2d center)
+void Circle::setCenter(const Vector2& center)
 {
 	m_center = center;
 	buildCircle();
@@ -33,11 +33,11 @@ void Circle::setRadius(float radius)
 
 void Circle::buildCircle()
 {
-	const int numVertices = 20;
-	std::vector<Vector2d> vertices;
+	const int numVertices = 512;
+	std::vector<Vector2> vertices;
 	for (int i = 0; i < numVertices; i++)
 	{
-		Vector2d vertex(
+		Vector2 vertex(
 			m_center.getX() + cos(M_PI * 2 * (float) i / numVertices) * m_radius,
 			m_center.getY() + sin(M_PI * 2 * (float) i / numVertices) * m_radius
 		);

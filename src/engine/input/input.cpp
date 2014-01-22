@@ -9,11 +9,11 @@ namespace engine
 namespace input
 {
 
-Input::Input(video::Video* video)
+Input::Input(video::Window* videoWindow)
 {
 	keyboard = new Keyboard;
-	mouse = new Mouse(video);
-	window = new Window(video);
+	mouse = new Mouse(videoWindow);
+	window = new Window(videoWindow);
 }
 
 Input::~Input()

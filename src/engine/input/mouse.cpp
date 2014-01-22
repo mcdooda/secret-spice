@@ -5,9 +5,9 @@ namespace engine
 namespace input
 {
 
-Mouse::Mouse(video::Video* video)
+Mouse::Mouse(video::Window* videoWindow) :
+	m_videoWindow(videoWindow)
 {
-	this->video = video;
 	clearEvents();
 }
 
@@ -51,7 +51,7 @@ void Mouse::addEvent(const SDL_Event& e)
 	{
 		case SDL_MOUSEBUTTONDOWN:
 		m_position.setX(e.button.x);
-		m_position.setY(video->window->getSize().getY() - e.button.y);
+		m_position.setY(m_videoWindow->getSize().getY() - e.button.y);
 
 		if (e.button.button < NUM_BUTTONS)
 			m_justPressedButtons[e.button.button] = true;
@@ -60,7 +60,7 @@ void Mouse::addEvent(const SDL_Event& e)
 
 		case SDL_MOUSEBUTTONUP:
 		m_position.setX(e.button.x);
-		m_position.setY(video->window->getSize().getY() - e.button.y);
+		m_position.setY(m_videoWindow->getSize().getY() - e.button.y);
 
 		if (e.button.button < NUM_BUTTONS)
 			m_justReleasedButtons[e.button.button] = true;
@@ -69,7 +69,7 @@ void Mouse::addEvent(const SDL_Event& e)
 
 		case SDL_MOUSEMOTION:
 		m_position.setX(e.button.x);
-		m_position.setY(video->window->getSize().getY() - e.button.y);
+		m_position.setY(m_videoWindow->getSize().getY() - e.button.y);
 		m_moved = true;
 		break;
 	}
