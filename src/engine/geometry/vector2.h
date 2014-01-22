@@ -1,6 +1,8 @@
 #ifndef ENGINE_GEOMETRY_VECTOR2_H
  #define ENGINE_GEOMETRY_VECTOR2_H
 
+#include <ostream>
+
 #ifndef M_PI
 	#define M_PI 3.1415926535897932384626433832795
 #endif
@@ -42,6 +44,8 @@ class Vector2
 
 		int getRoundX() const;
 		int getRoundY() const;
+		
+		friend std::ostream& operator<<(std::ostream& out, Vector2 vector2);
 
 	private:
 		float m_x;

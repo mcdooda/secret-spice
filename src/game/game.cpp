@@ -21,6 +21,11 @@ void Game::begin()
 	
 	circle1 = geometry::Circle(geometry::Vector2(0, 1), 1);
 	circle2 = geometry::Circle(geometry::Vector2(0,-1), 1);
+	
+	view = video::View();
+	view.updateProjection(engine->video->window->getSize());
+	
+	zoom = true;
 }
 
 bool Game::update()
@@ -39,6 +44,25 @@ bool Game::update()
 			engine->time->pause();
 	}
 	
+	if (engine->input->mouse->isJustPressed(M(LEFT)))
+		zoom = !zoom;
+	
+	if (zoom)
+		view.zoom(1.0f + engine->time->getFrameTime());
+		
+	else
+		view.zoom(1.0f - engine->time->getFrameTime());
+		
+	view.rotate(engine->time->getFrameTime());
+	
+	if (engine->input->window->isResized())
+		view.updateProjection(engine->video->window->getSize());
+	
+	viewMouse = view.getRelativePosition(engine->input->mouse->getPosition(), engine->video->window->getSize());
+	
+	circle1.setCenter(viewMouse - geometry::Vector2(0, 1));
+	circle2.setCenter(viewMouse + geometry::Vector2(0, 1));
+	
 	return keepRunning;
 }
 
@@ -49,10 +73,6 @@ void Game::draw()
 	int vertexAttrib = program.getAttribLocation("position");
 	video::Uniform colorUniform = program.getUniform("color");
 	video::Uniform viewProjectionMatrixUniform = program.getUniform("vpMatrix");
-	
-	video::View view;
-	view.zoom(engine->time->getTime() * 50);
-	view.updateProjectionMatrix(engine->video->window->getSize());
 	
 	viewProjectionMatrixUniform.setMatrix4(view.getViewProjectionMatrix());
 	

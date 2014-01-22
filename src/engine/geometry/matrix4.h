@@ -45,6 +45,8 @@ class Matrix4
 		inline void set(int y, int x, float value) { m_matrix[y * 4 + x] = value; }
 		
 		inline const float* getData() const { return m_matrix; }
+		
+		friend std::ostream& operator<<(std::ostream& out, Matrix4 matrix4);
 	
 	private:
 		void copy(const Matrix4& matrix4);

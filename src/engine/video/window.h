@@ -3,7 +3,7 @@
 
 #include <string>
 #include <SDL2/SDL.h>
-#include "view.h"
+#include "../geometry/vector2.h"
 
 namespace engine
 {
@@ -27,10 +27,6 @@ class Window
 		void resized(const geometry::Vector2& size);
 
 		geometry::Vector2 getDesktopSize();
-
-		void setView(View view);
-		inline const View& getView() const { return m_view; }
-		void setInterfaceView();
 		
 		void beginFrame();
 		void endFrame();
@@ -45,7 +41,6 @@ class Window
 		bool m_vsync;
 		SDL_Window* m_window;
 		SDL_Renderer* m_renderer;
-		View m_view;
 };
 
 } // video

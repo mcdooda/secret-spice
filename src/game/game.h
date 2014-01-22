@@ -20,6 +20,12 @@ class Game : public engine::Game
 	private:
 		geometry::Circle circle1;
 		geometry::Circle circle2;
+		
+		video::View view;
+		
+		geometry::Vector2 viewMouse;
+		
+		bool zoom;
 };
 
 } // game

@@ -88,7 +88,7 @@ void Keyboard::addEvent(const SDL_Event& e)
 	{
 		case SDL_KEYDOWN:
 		
-		if (e.key.keysym.sym < m_numKeys)
+		if (!e.key.repeat && e.key.keysym.sym < m_numKeys)
 			m_justPressedKeys[e.key.keysym.sym] = 1;
 			
 		break;

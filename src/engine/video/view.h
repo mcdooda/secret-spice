@@ -13,13 +13,16 @@ class View
 {
 	public:
 		View();
-
+		
+		void reset();
+		
 		void zoom(float factor);
 		void move(geometry::Vector2 position);
+		void rotate(float angle);
 		
-		geometry::Vector2 getRelativePosition(const geometry::Vector2& windowPosition) const;
+		geometry::Vector2 getRelativePosition(const geometry::Vector2& windowPosition, const geometry::Vector2& windowSize) const;
 
-		void updateProjectionMatrix(const geometry::Vector2& windowSize);
+		void updateProjection(const geometry::Vector2& windowSize);
 		
 		inline const geometry::Matrix4& getProjectionMatrix() const { return m_projectionMatrix; }
 		inline const geometry::Matrix4& getViewMatrix() const { return m_viewMatrix; }

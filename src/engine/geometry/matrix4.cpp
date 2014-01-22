@@ -1,3 +1,4 @@
+#include <iomanip>
 #include <cstring>
 #include <cmath>
 #include "matrix4.h"
@@ -85,17 +86,126 @@ void Matrix4::setOrtho(float left, float right, float bottom, float top, float n
 
 void Matrix4::setInverse()
 {
-	/*Matrix4 I;
-	for (int x = 0; x < 4; x++)
-	{
-		float f = get(x, x);
-		for (int y = 0; y < 4; y++)
-		{
-			set(y, x, get(y, x) / f);
-			I.set(y, x, I.get(y, x) / f);
-		}
-		for (
-	}*/
+	// from www.mesa3d.org gluInvertMatrix
+    float inv[16];
+
+    inv[0] = m_matrix[5]  * m_matrix[10] * m_matrix[15] - 
+             m_matrix[5]  * m_matrix[11] * m_matrix[14] - 
+             m_matrix[9]  * m_matrix[6]  * m_matrix[15] + 
+             m_matrix[9]  * m_matrix[7]  * m_matrix[14] +
+             m_matrix[13] * m_matrix[6]  * m_matrix[11] - 
+             m_matrix[13] * m_matrix[7]  * m_matrix[10];
+
+    inv[4] = -m_matrix[4]  * m_matrix[10] * m_matrix[15] + 
+              m_matrix[4]  * m_matrix[11] * m_matrix[14] + 
+              m_matrix[8]  * m_matrix[6]  * m_matrix[15] - 
+              m_matrix[8]  * m_matrix[7]  * m_matrix[14] - 
+              m_matrix[12] * m_matrix[6]  * m_matrix[11] + 
+              m_matrix[12] * m_matrix[7]  * m_matrix[10];
+
+    inv[8] = m_matrix[4]  * m_matrix[9] * m_matrix[15] - 
+             m_matrix[4]  * m_matrix[11] * m_matrix[13] - 
+             m_matrix[8]  * m_matrix[5] * m_matrix[15] + 
+             m_matrix[8]  * m_matrix[7] * m_matrix[13] + 
+             m_matrix[12] * m_matrix[5] * m_matrix[11] - 
+             m_matrix[12] * m_matrix[7] * m_matrix[9];
+
+    inv[12] = -m_matrix[4]  * m_matrix[9] * m_matrix[14] + 
+               m_matrix[4]  * m_matrix[10] * m_matrix[13] +
+               m_matrix[8]  * m_matrix[5] * m_matrix[14] - 
+               m_matrix[8]  * m_matrix[6] * m_matrix[13] - 
+               m_matrix[12] * m_matrix[5] * m_matrix[10] + 
+               m_matrix[12] * m_matrix[6] * m_matrix[9];
+
+    inv[1] = -m_matrix[1]  * m_matrix[10] * m_matrix[15] + 
+              m_matrix[1]  * m_matrix[11] * m_matrix[14] + 
+              m_matrix[9]  * m_matrix[2] * m_matrix[15] - 
+              m_matrix[9]  * m_matrix[3] * m_matrix[14] - 
+              m_matrix[13] * m_matrix[2] * m_matrix[11] + 
+              m_matrix[13] * m_matrix[3] * m_matrix[10];
+
+    inv[5] = m_matrix[0]  * m_matrix[10] * m_matrix[15] - 
+             m_matrix[0]  * m_matrix[11] * m_matrix[14] - 
+             m_matrix[8]  * m_matrix[2] * m_matrix[15] + 
+             m_matrix[8]  * m_matrix[3] * m_matrix[14] + 
+             m_matrix[12] * m_matrix[2] * m_matrix[11] - 
+             m_matrix[12] * m_matrix[3] * m_matrix[10];
+
+    inv[9] = -m_matrix[0]  * m_matrix[9] * m_matrix[15] + 
+              m_matrix[0]  * m_matrix[11] * m_matrix[13] + 
+              m_matrix[8]  * m_matrix[1] * m_matrix[15] - 
+              m_matrix[8]  * m_matrix[3] * m_matrix[13] - 
+              m_matrix[12] * m_matrix[1] * m_matrix[11] + 
+              m_matrix[12] * m_matrix[3] * m_matrix[9];
+
+    inv[13] = m_matrix[0]  * m_matrix[9] * m_matrix[14] - 
+              m_matrix[0]  * m_matrix[10] * m_matrix[13] - 
+              m_matrix[8]  * m_matrix[1] * m_matrix[14] + 
+              m_matrix[8]  * m_matrix[2] * m_matrix[13] + 
+              m_matrix[12] * m_matrix[1] * m_matrix[10] - 
+              m_matrix[12] * m_matrix[2] * m_matrix[9];
+
+    inv[2] = m_matrix[1]  * m_matrix[6] * m_matrix[15] - 
+             m_matrix[1]  * m_matrix[7] * m_matrix[14] - 
+             m_matrix[5]  * m_matrix[2] * m_matrix[15] + 
+             m_matrix[5]  * m_matrix[3] * m_matrix[14] + 
+             m_matrix[13] * m_matrix[2] * m_matrix[7] - 
+             m_matrix[13] * m_matrix[3] * m_matrix[6];
+
+    inv[6] = -m_matrix[0]  * m_matrix[6] * m_matrix[15] + 
+              m_matrix[0]  * m_matrix[7] * m_matrix[14] + 
+              m_matrix[4]  * m_matrix[2] * m_matrix[15] - 
+              m_matrix[4]  * m_matrix[3] * m_matrix[14] - 
+              m_matrix[12] * m_matrix[2] * m_matrix[7] + 
+              m_matrix[12] * m_matrix[3] * m_matrix[6];
+
+    inv[10] = m_matrix[0]  * m_matrix[5] * m_matrix[15] - 
+              m_matrix[0]  * m_matrix[7] * m_matrix[13] - 
+              m_matrix[4]  * m_matrix[1] * m_matrix[15] + 
+              m_matrix[4]  * m_matrix[3] * m_matrix[13] + 
+              m_matrix[12] * m_matrix[1] * m_matrix[7] - 
+              m_matrix[12] * m_matrix[3] * m_matrix[5];
+
+    inv[14] = -m_matrix[0]  * m_matrix[5] * m_matrix[14] + 
+               m_matrix[0]  * m_matrix[6] * m_matrix[13] + 
+               m_matrix[4]  * m_matrix[1] * m_matrix[14] - 
+               m_matrix[4]  * m_matrix[2] * m_matrix[13] - 
+               m_matrix[12] * m_matrix[1] * m_matrix[6] + 
+               m_matrix[12] * m_matrix[2] * m_matrix[5];
+
+    inv[3] = -m_matrix[1] * m_matrix[6] * m_matrix[11] + 
+              m_matrix[1] * m_matrix[7] * m_matrix[10] + 
+              m_matrix[5] * m_matrix[2] * m_matrix[11] - 
+              m_matrix[5] * m_matrix[3] * m_matrix[10] - 
+              m_matrix[9] * m_matrix[2] * m_matrix[7] + 
+              m_matrix[9] * m_matrix[3] * m_matrix[6];
+
+    inv[7] = m_matrix[0] * m_matrix[6] * m_matrix[11] - 
+             m_matrix[0] * m_matrix[7] * m_matrix[10] - 
+             m_matrix[4] * m_matrix[2] * m_matrix[11] + 
+             m_matrix[4] * m_matrix[3] * m_matrix[10] + 
+             m_matrix[8] * m_matrix[2] * m_matrix[7] - 
+             m_matrix[8] * m_matrix[3] * m_matrix[6];
+
+    inv[11] = -m_matrix[0] * m_matrix[5] * m_matrix[11] + 
+               m_matrix[0] * m_matrix[7] * m_matrix[9] + 
+               m_matrix[4] * m_matrix[1] * m_matrix[11] - 
+               m_matrix[4] * m_matrix[3] * m_matrix[9] - 
+               m_matrix[8] * m_matrix[1] * m_matrix[7] + 
+               m_matrix[8] * m_matrix[3] * m_matrix[5];
+
+    inv[15] = m_matrix[0] * m_matrix[5] * m_matrix[10] - 
+              m_matrix[0] * m_matrix[6] * m_matrix[9] - 
+              m_matrix[4] * m_matrix[1] * m_matrix[10] + 
+              m_matrix[4] * m_matrix[2] * m_matrix[9] + 
+              m_matrix[8] * m_matrix[1] * m_matrix[6] - 
+              m_matrix[8] * m_matrix[2] * m_matrix[5];
+
+    float det = m_matrix[0] * inv[0] + m_matrix[1] * inv[4] + m_matrix[2] * inv[8] + m_matrix[3] * inv[12];
+    det = 1.0 / det;
+
+    for (int i = 0; i < 16; i++)
+        m_matrix[i] = inv[i] * det;
 }
 
 void Matrix4::scale(float scale)
@@ -250,6 +360,44 @@ void Matrix4::rotateZ(float rotateZ)
 void Matrix4::copy(const Matrix4& matrix4)
 {
 	memcpy(m_matrix, matrix4.m_matrix, sizeof(m_matrix));
+}
+
+std::ostream& operator<<(std::ostream& out, Matrix4 matrix4)
+{
+	const int w = 7;
+	const int p = 2;
+	
+	int precision = out.precision();
+	
+	out << std::setprecision(p)
+	    << "("
+	    << std::setw(w) << matrix4.get(0, 0) << " "
+	    << std::setw(w) << matrix4.get(0, 1) << " "
+	    << std::setw(w) << matrix4.get(0, 2) << " "
+	    << std::setw(w) << matrix4.get(0, 3)
+	    << ")" << std::endl
+	    << "("
+	    << std::setw(w) << matrix4.get(1, 0) << " "
+	    << std::setw(w) << matrix4.get(1, 1) << " "
+	    << std::setw(w) << matrix4.get(1, 2) << " "
+	    << std::setw(w) << matrix4.get(1, 3)
+	    << ")" << std::endl
+	    << "("
+	    << std::setw(w) << matrix4.get(2, 0) << " "
+	    << std::setw(w) << matrix4.get(2, 1) << " "
+	    << std::setw(w) << matrix4.get(2, 2) << " "
+	    << std::setw(w) << matrix4.get(2, 3)
+	    << ")" << std::endl
+	    << "("
+	    << std::setw(w) << matrix4.get(3, 0) << " "
+	    << std::setw(w) << matrix4.get(3, 1) << " "
+	    << std::setw(w) << matrix4.get(3, 2) << " "
+	    << std::setw(w) << matrix4.get(3, 3)
+	    << ")" << std::endl;
+	    
+    out.precision(precision);
+    
+	return out;
 }
 
 } // geometry

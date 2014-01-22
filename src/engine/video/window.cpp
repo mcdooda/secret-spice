@@ -74,7 +74,6 @@ void Window::resized(const geometry::Vector2& size)
 {
 	m_size = size;
 	glViewport(0, 0, m_size.getX(), m_size.getY());
-	setView(m_view);
 }
 
 geometry::Vector2 Window::getDesktopSize()
@@ -82,17 +81,6 @@ geometry::Vector2 Window::getDesktopSize()
 	SDL_DisplayMode desktopDisplayMode;
 	SDL_GetDesktopDisplayMode(0, &desktopDisplayMode);
 	return geometry::Vector2(desktopDisplayMode.w, desktopDisplayMode.h);
-}
-
-void Window::setView(View view)
-{
-	m_view = view;
-	m_view.updateProjectionMatrix(m_size);
-}
-
-void Window::setInterfaceView()
-{
-	setView(View());
 }
 
 void Window::beginFrame()

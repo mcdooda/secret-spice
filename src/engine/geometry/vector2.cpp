@@ -129,6 +129,12 @@ int Vector2::getRoundY() const
 	return round(m_y);
 }
 
+std::ostream& operator<<(std::ostream& out, Vector2 vector2)
+{
+	out << "(" << vector2.m_x << "," << vector2.m_y << ")";
+	return out;
+}
+
 } // geometry
 } // engine
 
