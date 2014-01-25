@@ -81,12 +81,11 @@ int Program::compileShader(std::string shader, int shaderType)
 void Program::checkProgram(int programId)
 {
 	GLint result = GL_FALSE;
-	int infoLogLength;
-
 	glGetProgramiv(programId, GL_LINK_STATUS, &result);
-	glGetProgramiv(programId, GL_INFO_LOG_LENGTH, &infoLogLength);
 
 	if (!result) {
+	    int infoLogLength;
+	    glGetProgramiv(programId, GL_INFO_LOG_LENGTH, &infoLogLength);
 	    char message[infoLogLength];
 		glGetProgramInfoLog(programId, infoLogLength, NULL, message);
 		std::cerr << "Warning: " << message << std::endl;
@@ -97,12 +96,11 @@ void Program::checkProgram(int programId)
 void Program::checkShader(std::string shaderFile, int shaderId)
 {
 	GLint result = GL_FALSE;
-	int infoLogLength;
-
 	glGetShaderiv(shaderId, GL_COMPILE_STATUS, &result);
-	glGetShaderiv(shaderId, GL_INFO_LOG_LENGTH, &infoLogLength);
 
 	if (!result) {
+	    int infoLogLength;
+	    glGetShaderiv(shaderId, GL_INFO_LOG_LENGTH, &infoLogLength);
 		char message[infoLogLength];
 		glGetShaderInfoLog(shaderId, infoLogLength, NULL, message);
 		std::cerr << "Warning while loading shader file '" << shaderFile << "' :" << std::endl << message << std::endl;
