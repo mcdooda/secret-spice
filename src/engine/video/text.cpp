@@ -1,5 +1,4 @@
 #include <iostream>
-#include <SDL2/SDL_ttf.h>
 #include "text.h"
 
 namespace engine

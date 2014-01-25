@@ -86,10 +86,10 @@ void Program::checkProgram(int programId)
 	glGetProgramiv(programId, GL_LINK_STATUS, &result);
 	glGetProgramiv(programId, GL_INFO_LOG_LENGTH, &infoLogLength);
 
-	if (infoLogLength > 0) {
-		std::vector<char> message(infoLogLength + 1);
-		glGetProgramInfoLog(programId, infoLogLength, NULL, &message[0]);
-		std::cerr << "Warning: " << (const char*) &message[0] << std::endl;
+	if (!result) {
+	    char message[infoLogLength];
+		glGetProgramInfoLog(programId, infoLogLength, NULL, message);
+		std::cerr << "Warning: " << message << std::endl;
 		m_valid = false;
 	}
 }
@@ -102,10 +102,10 @@ void Program::checkShader(std::string shaderFile, int shaderId)
 	glGetShaderiv(shaderId, GL_COMPILE_STATUS, &result);
 	glGetShaderiv(shaderId, GL_INFO_LOG_LENGTH, &infoLogLength);
 
-	if (infoLogLength > 0) {
-		std::vector<char> message(infoLogLength + 1);
-		glGetShaderInfoLog(shaderId, infoLogLength, NULL, &message[0]);
-		std::cerr << "Warning while loading shader file '" << shaderFile << "' :" << std::endl << (const char*) &message[0] << std::endl;
+	if (!result) {
+		char message[infoLogLength];
+		glGetShaderInfoLog(shaderId, infoLogLength, NULL, message);
+		std::cerr << "Warning while loading shader file '" << shaderFile << "' :" << std::endl << message << std::endl;
 		m_valid = false;
 	}
 }

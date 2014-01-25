@@ -20,7 +20,7 @@ target_link_libraries(
     beatshapt
     SDL2
     SDL2_image
-    SDL2_ttf
+    SDL_ttf
     GL
     GLU
     GLEW
