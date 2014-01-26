@@ -19,6 +19,11 @@ Circle::Circle() : Polygon()
 	
 }
 
+Circle::~Circle()
+{
+	
+}
+
 void Circle::setCenter(const Vector2& center)
 {
 	m_center = center;

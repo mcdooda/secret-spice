@@ -13,6 +13,7 @@ class Circle : public Polygon
 	public:
 		Circle(Vector2 center, float radius);
 		Circle();
+		virtual ~Circle();
 		
 		void setCenter(const Vector2& center);
 		void setRadius(float radius);

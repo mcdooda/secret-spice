@@ -10,6 +10,7 @@ Time::Time()
 {
 	m_timePaused = false;
 	m_pauseElapsedTime = 0;
+	m_frameTime = 0;
 	setFrameRate(60.0f);
 }
 
@@ -65,9 +66,13 @@ void Time::resume()
 	m_pauseElapsedTime += getRealTime() - m_pauseRealTime;
 }
 
-bool Time::isPaused()
+void Time::togglePause()
 {
-	return m_timePaused;
+	if (m_timePaused)
+		resume();
+		
+	else
+		pause();
 }
 
 float Time::getTime()

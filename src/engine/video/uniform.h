@@ -2,6 +2,7 @@
 #define ENGINE_VIDEO_UNIFORM_H
 
 #include "color.h"
+#include "rendertexture.h"
 #include "../geometry/vector2.h"
 #include "../geometry/matrix4.h"
 
@@ -14,9 +15,11 @@ class Uniform
 {
 	public:
 		Uniform(int uniformLocation);
+		Uniform();
 		~Uniform();
 		
 		void setColor(const Color& color);
+		void setTexture(const RenderTexture& texture, int activeTexture);
 		void setVector2(const geometry::Vector2& vector2);
 		void setMatrix4(const geometry::Matrix4& matrix4);
 		

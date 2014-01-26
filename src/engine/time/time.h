@@ -21,7 +21,8 @@ class Time
 
 		void pause();
 		void resume();
-		bool isPaused();
+		inline bool isPaused() const { return m_timePaused; }
+		void togglePause();
 
 		float getTime();
 		float getFrameTime();

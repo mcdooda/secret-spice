@@ -40,6 +40,13 @@ void Window::open(geometry::Vector2 size, std::string name, bool fullScreen, boo
 		exit(1);
 	}
 	
+	if (!GLEW_ARB_vertex_program
+	 || !GLEW_ARB_fragment_program
+	 || !GLEW_ARB_texture_float
+	 || !GLEW_ARB_draw_buffers
+	 || !GLEW_ARB_framebuffer_object)
+		std::cerr << "Warning: Shaders not supported!" << std::endl;
+	
 	SDL_WarpMouseInWindow(m_window, size.getX() / 2, size.getY() / 2);
 
 	m_fullScreen = fullScreen;
@@ -90,6 +97,7 @@ void Window::beginFrame()
 
 void Window::endFrame()
 {
+	glUseProgram(0);
 	glFlush();
 	SDL_RenderPresent(m_renderer);
 }

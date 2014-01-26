@@ -31,7 +31,7 @@ Polygon::~Polygon()
 	delete m_vertices;
 }
 
-void Polygon::draw(int vertexAttrib)
+void Polygon::draw(video::Attrib vertexAttrib)
 {
 	if (m_numVertices > 0)
 	{

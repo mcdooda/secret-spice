@@ -2,6 +2,8 @@
 #define ENGINE_VIDEO_PROGRAM_H
 
 #include <string>
+#include <vector>
+#include "attrib.h"
 #include "uniform.h"
 
 namespace engine
@@ -21,21 +23,37 @@ class Program
 		
 		void use();
 		
-		int getAttribLocation(std::string attribName);
+		void pass();
+		void render();
+		
+		Attrib getAttrib(std::string attribName);
 		Uniform getUniform(std::string uniformName);
 		
-	private:
-		int compileProgram(int fragmentShaderId, int vertexShaderId);
-		int compileShader(std::string shader, int shaderType);
+		inline const Uniform& getVpMatrixUniform() const { return m_vpMatrixUniform; }
+		inline const Attrib& getPositionAttrib() const { return m_positionAttrib; }
 		
-		void checkProgram(int programId);
-		void checkShader(std::string shaderFile, int shaderId);
+		void addInputTexture(RenderTexture texture);
+		
+	private:
+		int compileProgram(unsigned int fragmentShaderId, unsigned int vertexShaderId);
+		int compileShader(std::string shader, unsigned int shaderType);
+		
+		void checkProgram(unsigned int programId);
+		void checkShader(std::string shaderFile, unsigned int shaderId);
 		
 		const char* readCode(std::string shader);
 		
-	private:
-		int m_programId;
+		void loadCommonAttribsUniforms();
+		
+	protected:
+		unsigned int m_programId;
 		bool m_valid;
+		
+		Uniform m_vpMatrixUniform;
+		Attrib m_positionAttrib;
+		
+		std::vector<RenderTexture> m_inputTextures;
+		std::vector<Uniform> m_inputTexturesUniforms;
 };
 
 } // video

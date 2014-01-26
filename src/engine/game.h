@@ -7,11 +7,13 @@
 // single header public API
 
 // geometry
+#include "geometry/linesegment.h"
 #include "geometry/circle.h"
 #include "geometry/rectangle.h"
 
 // video
-#include "video/program.h"
+#include "video/pass.h"
+#include "video/render.h"
 #include "video/color.h"
 
 namespace engine
@@ -41,7 +43,6 @@ class Game
 		
 	protected:
 		Engine* engine;
-		video::Program program;
 };
 
 } // engine

@@ -35,6 +35,8 @@ void Program::load(std::string fragmentShader, std::string vertexShader)
 	
 	m_programId = compileProgram(fragmentShaderId, vertexShaderId);
 	checkProgram(m_programId);
+	
+	loadCommonAttribsUniforms();
 }
 
 void Program::use()
@@ -46,9 +48,18 @@ void Program::use()
 	}
 		
 	glUseProgram(m_programId);
+	
+	if (m_inputTextures.size() > 0)
+	{
+		std::vector<Uniform>::iterator it1 = m_inputTexturesUniforms.begin();
+		std::vector<RenderTexture>::iterator it2 = m_inputTextures.begin();
+		const std::vector<Uniform>::iterator it1_end = m_inputTexturesUniforms.end();
+		for (int i = 0; it1 != it1_end; i++, it1++, it2++)
+			it1->setTexture(*it2, i);
+	}
 }
 
-int Program::getAttribLocation(std::string attribName)
+Attrib Program::getAttrib(std::string attribName)
 {
 	return glGetAttribLocation(m_programId, attribName.c_str());
 }
@@ -59,7 +70,15 @@ Uniform Program::getUniform(std::string uniformName)
 	return Uniform(uniformLocation);
 }
 
-int Program::compileProgram(int fragmentShaderId, int vertexShaderId)
+void Program::addInputTexture(RenderTexture texture)
+{
+	m_inputTextures.push_back(texture);
+	
+	Uniform inputTextureUniform = getUniform(texture.getName());
+	m_inputTexturesUniforms.push_back(inputTextureUniform);
+}
+
+int Program::compileProgram(unsigned int fragmentShaderId, unsigned int vertexShaderId)
 {
 	int programId = glCreateProgram();
 	glAttachShader(programId, vertexShaderId);
@@ -68,7 +87,7 @@ int Program::compileProgram(int fragmentShaderId, int vertexShaderId)
 	return programId;
 }
 
-int Program::compileShader(std::string shader, int shaderType)
+int Program::compileShader(std::string shader, unsigned int shaderType)
 {
 	const char* shaderCode = readCode(shader);
 	int shaderId = glCreateShader(shaderType);
@@ -78,7 +97,7 @@ int Program::compileShader(std::string shader, int shaderType)
 	return shaderId;
 }
 
-void Program::checkProgram(int programId)
+void Program::checkProgram(unsigned int programId)
 {
 	GLint result = GL_FALSE;
 	int infoLogLength;
@@ -94,7 +113,7 @@ void Program::checkProgram(int programId)
 	}
 }
 
-void Program::checkShader(std::string shaderFile, int shaderId)
+void Program::checkShader(std::string shaderFile, unsigned int shaderId)
 {
 	GLint result = GL_FALSE;
 	int infoLogLength;
@@ -131,6 +150,15 @@ const char* Program::readCode(std::string shader)
 	file.close();
 	
 	return code;
+}
+
+void Program::loadCommonAttribsUniforms()
+{
+	// attributes
+	m_positionAttrib = getAttrib("position");
+	
+	// uniforms
+	m_vpMatrixUniform = getUniform("vpMatrix");
 }
 
 } // video

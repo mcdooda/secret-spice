@@ -3,6 +3,7 @@
 
 #include <vector>
 #include "vector2.h"
+#include "../video/attrib.h"
 
 namespace engine
 {
@@ -17,7 +18,7 @@ class Polygon
 		void operator=(const Polygon& polygon);
 		virtual ~Polygon();
 		
-		void draw(int vertexAttrib);
+		void draw(video::Attrib vertexAttrib);
 		
 	protected:
 		Polygon();
