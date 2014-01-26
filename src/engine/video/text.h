@@ -2,7 +2,7 @@
 #define ENGINE_VIDEO_TEXT_H
 
 #include <string>
-#include <SDL2/SDL_ttf.h>
+#include <SDL/SDL_ttf.h>
 #include "texture.h"
 #include "color.h"
 #include "font.h"
