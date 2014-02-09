@@ -21,11 +21,6 @@ class Color
 		inline void setG(unsigned char g) { m_g = g; }
 		inline void setB(unsigned char b) { m_b = b; }
 		inline void setA(unsigned char a) { m_a = a; }
-
-		void use();
-		void unuse();
-		
-		void clear();
 		
 		Color* newCopy();
 		

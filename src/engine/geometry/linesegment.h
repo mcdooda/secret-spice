@@ -2,7 +2,7 @@
 #define ENGINE_GEOMETRY_LINESEGMENT_H
 
 #include "vector2.h"
-#include "../video/attrib.h"
+#include "../video/attribute.h"
 
 namespace engine
 {
@@ -16,7 +16,7 @@ class LineSegment
 		LineSegment();
 		virtual ~LineSegment();
 		
-		void draw(video::Attrib vertexAttrib);
+		void draw(video::Attribute vertexAttribute);
 		
 		inline Vector2 getA() const { return Vector2(m_vertices[0], m_vertices[1]); }
 		void setA(const Vector2& a) { m_vertices[0] = a.getX(); m_vertices[1] = a.getY(); }

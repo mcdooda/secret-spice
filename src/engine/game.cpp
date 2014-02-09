@@ -3,10 +3,11 @@
 namespace engine
 {
 
-Game::Game(std::string name)
+Game::Game(std::vector<std::string> args)
 {
 	engine = new Engine();
-	engine->video->window->open(engine->video->window->getDesktopSize() / 2, name, false, true);
+	engine->video->window->open(engine->video->window->getDesktopSize() / 2, false, true);
+	this->args = args;
 }
 
 Game::~Game()
@@ -29,7 +30,6 @@ void Game::loop()
 		engine->input->poll();
 		running = update() && !engine->input->window->isClosed();
 	
-		engine->video->beginFrame();
 		draw();
 		engine->video->endFrame();
 		

@@ -16,7 +16,8 @@ class Window
 		Window();
 		~Window();
 		
-		void open(geometry::Vector2 size, std::string name, bool fullScreen, bool vsync);
+		void open(geometry::Vector2 size, bool fullScreen, bool vsync);
+		void setTitle(std::string title);
 
 		void toggleFullScreen();
 		
@@ -28,11 +29,12 @@ class Window
 
 		geometry::Vector2 getDesktopSize();
 		
-		void beginFrame();
 		void endFrame();
 		
 	private:
 		void initSize(const geometry::Vector2& size);
+		
+		static void initGlew();
 	
 	private:
 		geometry::Vector2 m_size;
@@ -41,6 +43,8 @@ class Window
 		bool m_vsync;
 		SDL_Window* m_window;
 		SDL_Renderer* m_renderer;
+		
+		static bool glewOk;
 };
 
 } // video

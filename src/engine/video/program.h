@@ -1,9 +1,10 @@
 #ifndef ENGINE_VIDEO_PROGRAM_H
 #define ENGINE_VIDEO_PROGRAM_H
 
+#include <map>
 #include <string>
 #include <vector>
-#include "attrib.h"
+#include "attribute.h"
 #include "uniform.h"
 
 namespace engine
@@ -26,13 +27,8 @@ class Program
 		void pass();
 		void render();
 		
-		Attrib getAttrib(std::string attribName);
+		Attribute getAttribute(std::string attributeName);
 		Uniform getUniform(std::string uniformName);
-		
-		inline const Uniform& getVpMatrixUniform() const { return m_vpMatrixUniform; }
-		inline const Attrib& getPositionAttrib() const { return m_positionAttrib; }
-		
-		void addInputTexture(RenderTexture texture);
 		
 	private:
 		int compileProgram(unsigned int fragmentShaderId, unsigned int vertexShaderId);
@@ -43,17 +39,15 @@ class Program
 		
 		const char* readCode(std::string shader);
 		
-		void loadCommonAttribsUniforms();
+		void loadAttributes();
+		void loadUniforms();
 		
 	protected:
 		unsigned int m_programId;
 		bool m_valid;
 		
-		Uniform m_vpMatrixUniform;
-		Attrib m_positionAttrib;
-		
-		std::vector<RenderTexture> m_inputTextures;
-		std::vector<Uniform> m_inputTexturesUniforms;
+		std::map<std::string, Attribute> m_attributes;
+		std::map<std::string, Uniform> m_uniforms;
 };
 
 } // video

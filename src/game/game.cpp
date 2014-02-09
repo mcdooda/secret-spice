@@ -5,7 +5,7 @@
 namespace game
 {
 
-Game::Game() : engine::Game("BEATSHAPT")
+Game::Game(std::vector<std::string> args) : engine::Game(args)
 {
 	
 }
@@ -17,19 +17,11 @@ Game::~Game()
 
 void Game::initPasses()
 {
-	// 1st pass
-	pass1.init(engine->video->window->getSize());
-	pass1.load("rsrc/shader/render.frag", "rsrc/shader/render.vert");
+	program.load("rsrc/shader/render.frag", "rsrc/shader/render.vert");
 	
-	colorTexture = pass1.newColorTexture("colorTexture");
-	
-	vertexAttrib = pass1.getPositionAttrib();
-	vpMatrixUniform = pass1.getVpMatrixUniform();
-	colorUniform = pass1.getUniform("color");
-	
-	// 2nd pass
-	finalRender.load("rsrc/shader/blur.frag", "rsrc/shader/blur.vert");
-	finalRender.addInputTexture(colorTexture);
+	vertexAttribute = program.getAttribute("position");
+	vpMatrixUniform = program.getUniform("vpMatrix");
+	colorUniform = program.getUniform("color");
 }
 
 void Game::initObjects()
@@ -37,6 +29,8 @@ void Game::initObjects()
 	// drawable objects
 	circle1 = geometry::Circle(geometry::Vector2(0, 1), 1);
 	circle2 = geometry::Circle(geometry::Vector2(0,-1), 1);
+	
+	unitSquare = geometry::Rectangle(geometry::Vector2(), geometry::Vector2(1, 1));
 	
 	x = geometry::LineSegment(geometry::Vector2(), geometry::Vector2(1, 0));
 	y = geometry::LineSegment(geometry::Vector2(), geometry::Vector2(0, 1));
@@ -58,6 +52,7 @@ void Game::initLogic()
 
 void Game::begin()
 {
+	engine->video->window->setTitle("BEATSHAPT");
 	initPasses();
 	initObjects();
 	initView();
@@ -101,25 +96,24 @@ bool Game::update()
 
 void Game::draw()
 {
-	// 1st pass: draw scene
-	pass1.use();
+	program.use();
 	
 	vpMatrixUniform.setMatrix4(view.getViewProjectionMatrix());
 	
 	colorUniform.setColor(video::Color(128, 255, 0, 255));
-	circle1.draw(vertexAttrib);
+	circle1.draw(vertexAttribute);
 	
 	colorUniform.setColor(video::Color(128, 0, 255, 255));
-	circle2.draw(vertexAttrib);
+	circle2.draw(vertexAttribute);
+	
+	colorUniform.setColor(video::Color(128, 128, 128, 255));
+	unitSquare.draw(vertexAttribute);
 	
 	colorUniform.setColor(video::Color(255, 0, 0, 255));
-	x.draw(vertexAttrib);
+	x.draw(vertexAttribute);
 	
 	colorUniform.setColor(video::Color(0, 0, 255, 255));
-	y.draw(vertexAttrib);
-	
-	// final pass: render on screen with blur effect
-	finalRender.draw();
+	y.draw(vertexAttribute);
 }
 
 void Game::end()

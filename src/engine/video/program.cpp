@@ -36,7 +36,8 @@ void Program::load(std::string fragmentShader, std::string vertexShader)
 	m_programId = compileProgram(fragmentShaderId, vertexShaderId);
 	checkProgram(m_programId);
 	
-	loadCommonAttribsUniforms();
+	loadAttributes();
+	loadUniforms();
 }
 
 void Program::use()
@@ -46,36 +47,31 @@ void Program::use()
 		std::cerr << "Fatal error: using invalid shader program" << std::endl;
 		exit(1);
 	}
-		
-	glUseProgram(m_programId);
 	
-	if (m_inputTextures.size() > 0)
-	{
-		std::vector<Uniform>::iterator it1 = m_inputTexturesUniforms.begin();
-		std::vector<RenderTexture>::iterator it2 = m_inputTextures.begin();
-		const std::vector<Uniform>::iterator it1_end = m_inputTexturesUniforms.end();
-		for (int i = 0; it1 != it1_end; i++, it1++, it2++)
-			it1->setTexture(*it2, i);
-	}
+	glClear(GL_COLOR_BUFFER_BIT);
+	glUseProgram(m_programId);
 }
 
-Attrib Program::getAttrib(std::string attribName)
+Attribute Program::getAttribute(std::string attributeName)
 {
-	return glGetAttribLocation(m_programId, attribName.c_str());
+	std::map<std::string, Attribute>::iterator it = m_attributes.find(attributeName);
+	
+	if (it != m_attributes.end())
+		return it->second;
+		
+	else
+		return -1;
 }
 
 Uniform Program::getUniform(std::string uniformName)
 {
-	int uniformLocation = glGetUniformLocation(m_programId, uniformName.c_str());
-	return Uniform(uniformLocation);
-}
-
-void Program::addInputTexture(RenderTexture texture)
-{
-	m_inputTextures.push_back(texture);
+	std::map<std::string, Uniform>::iterator it = m_uniforms.find(uniformName);
 	
-	Uniform inputTextureUniform = getUniform(texture.getName());
-	m_inputTexturesUniforms.push_back(inputTextureUniform);
+	if (it != m_uniforms.end())
+		return it->second;
+		
+	else
+		return Uniform(-1);
 }
 
 int Program::compileProgram(unsigned int fragmentShaderId, unsigned int vertexShaderId)
@@ -102,10 +98,11 @@ void Program::checkProgram(unsigned int programId)
 	GLint result = GL_FALSE;
 	glGetProgramiv(programId, GL_LINK_STATUS, &result);
 
-	if (!result) {
-	    int infoLogLength;
-	    glGetProgramiv(programId, GL_INFO_LOG_LENGTH, &infoLogLength);
-	    char message[infoLogLength];
+	if (!result)
+	{
+		int infoLogLength;
+		glGetProgramiv(programId, GL_INFO_LOG_LENGTH, &infoLogLength);
+		char message[infoLogLength];
 		glGetProgramInfoLog(programId, infoLogLength, NULL, message);
 		std::cerr << "Warning: " << message << std::endl;
 		m_valid = false;
@@ -117,9 +114,10 @@ void Program::checkShader(std::string shaderFile, unsigned int shaderId)
 	GLint result = GL_FALSE;
 	glGetShaderiv(shaderId, GL_COMPILE_STATUS, &result);
 
-	if (!result) {
-	    int infoLogLength;
-	    glGetShaderiv(shaderId, GL_INFO_LOG_LENGTH, &infoLogLength);
+	if (!result)
+	{
+		int infoLogLength;
+		glGetShaderiv(shaderId, GL_INFO_LOG_LENGTH, &infoLogLength);
 		char message[infoLogLength];
 		glGetShaderInfoLog(shaderId, infoLogLength, NULL, message);
 		std::cerr << "Warning while loading shader file '" << shaderFile << "' :" << std::endl << message << std::endl;
@@ -150,13 +148,36 @@ const char* Program::readCode(std::string shader)
 	return code;
 }
 
-void Program::loadCommonAttribsUniforms()
+void Program::loadAttributes()
 {
-	// attributes
-	m_positionAttrib = getAttrib("position");
-	
-	// uniforms
-	m_vpMatrixUniform = getUniform("vpMatrix");
+	int total = -1;
+	glGetProgramiv(m_programId, GL_ACTIVE_ATTRIBUTES, &total); 
+	for(int i = 0; i < total; i++) {
+		int nameLength;
+		int size;
+		GLenum type = GL_ZERO;
+		char name[100];
+		glGetActiveAttrib(m_programId, i, sizeof(name) - 1, &nameLength, &size, &type, name);
+		name[nameLength] = '\0';
+		int location = glGetAttribLocation(m_programId, name);
+		m_attributes[name] = location;
+	}
+}
+
+void Program::loadUniforms()
+{
+	int total = -1;
+	glGetProgramiv(m_programId, GL_ACTIVE_UNIFORMS, &total); 
+	for(int i = 0; i < total; i++) {
+		int nameLength;
+		int size;
+		GLenum type = GL_ZERO;
+		char name[100];
+		glGetActiveUniform(m_programId, i, sizeof(name) - 1, &nameLength, &size, &type, name);
+		name[nameLength] = '\0';
+		int location = glGetUniformLocation(m_programId, name);
+		m_uniforms[name] = Uniform(location);
+	}
 }
 
 } // video

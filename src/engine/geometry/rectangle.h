@@ -11,10 +11,16 @@ namespace geometry
 class Rectangle : public Polygon
 {
 	public:
-		Rectangle(Vector2 position, Vector2 size);
+		Rectangle(const Vector2& position, const Vector2& size);
+		Rectangle();
 		
-		inline float getWidth()  const { return m_vertices[3] - m_vertices[0]; }
-		inline float getHeight() const { return m_vertices[7] - m_vertices[1]; }
+		void setPositionSize(const Vector2& position, const Vector2& size);
+		
+		void setSize(const Vector2& size);
+		Vector2 getSize();
+		
+		void setPosition(const Vector2& position);
+		Vector2 getPosition();
 		
 };
 

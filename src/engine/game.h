@@ -12,8 +12,7 @@
 #include "geometry/rectangle.h"
 
 // video
-#include "video/pass.h"
-#include "video/render.h"
+#include "video/program.h"
 #include "video/color.h"
 
 namespace engine
@@ -22,7 +21,7 @@ namespace engine
 class Game
 {
 	public:
-		Game(std::string name);
+		Game(std::vector<std::string> args);
 		virtual ~Game();
 		
 		void loop();
@@ -31,9 +30,9 @@ class Game
 		virtual void draw() = 0;
 		virtual void end();
 		
-		template <class T> static int run()
+		template <class T> static int run(std::vector<std::string> args)
 		{
-			T* game = new T();
+			T* game = new T(args);
 			game->begin();
 			game->loop();
 			game->end();
@@ -43,6 +42,7 @@ class Game
 		
 	protected:
 		Engine* engine;
+		std::vector<std::string> args;
 };
 
 } // engine

@@ -28,13 +28,6 @@ void Uniform::setColor(const Color& color)
 	glUniform4f(m_uniformLocation, color.getR() / 255.f, color.getG() / 255.f, color.getB() / 255.f, color.getA() / 255.f);
 }
 
-void Uniform::setTexture(const RenderTexture& texture, int activeTexture)
-{
-	glActiveTexture(GL_TEXTURE0 + activeTexture);
-	glBindTexture(GL_TEXTURE_2D, texture.getTextureId());
-	glUniform1i(m_uniformLocation, activeTexture);
-}
-
 void Uniform::setVector2(const geometry::Vector2& vector2)
 {
 	glUniform4f(m_uniformLocation, vector2.getX(), vector2.getY(), 0, 1);

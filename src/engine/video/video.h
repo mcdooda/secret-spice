@@ -14,7 +14,6 @@ class Video
 		Video();
 		~Video();
 		
-		void beginFrame();
 		void endFrame();
 
 	public:

@@ -9,7 +9,7 @@ namespace game
 class Game : public engine::Game
 {
 	public:
-		Game();
+		Game(std::vector<std::string> args);
 		virtual ~Game();
 		
 		void initPasses();
@@ -27,6 +27,8 @@ class Game : public engine::Game
 		geometry::Circle circle1;
 		geometry::Circle circle2;
 		
+		geometry::Rectangle unitSquare;
+		
 		geometry::LineSegment x;
 		geometry::LineSegment y;
 		
@@ -39,19 +41,13 @@ class Game : public engine::Game
 		// zoom or unzoom?
 		bool zoom;
 		
-		// render
+		// program
+		video::Program program;
 		
-		// 1st pass
-		video::Pass pass1;
-		
-		video::RenderTexture colorTexture;
-		
-		video::Attrib vertexAttrib;
+		// attributes & uniforms
+		video::Attribute vertexAttribute;
 		video::Uniform vpMatrixUniform;
 		video::Uniform colorUniform;
-		
-		// 2nd pass
-		video::Render finalRender;
 };
 
 } // game

@@ -23,12 +23,12 @@ LineSegment::~LineSegment()
 
 }
 
-void LineSegment::draw(video::Attrib vertexAttrib)
+void LineSegment::draw(video::Attribute vertexAttribute)
 {
-	glEnableVertexAttribArray(vertexAttrib);
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, m_vertices);
+	glEnableVertexAttribArray(vertexAttribute);
+	glVertexAttribPointer(vertexAttribute, 2, GL_FLOAT, GL_FALSE, 0, m_vertices);
 	glDrawArrays(GL_LINES, 0, 2);
-	glDisableVertexAttribArray(vertexAttrib);
+	glDisableVertexAttribArray(vertexAttribute);
 }
 
 } // geometry

@@ -1,4 +1,3 @@
-#include <GL/glew.h>
 #include "color.h"
 
 namespace engine
@@ -25,21 +24,6 @@ Color::Color(unsigned char gray) :
 	m_a(255)
 {
 	
-}
-
-void Color::use()
-{
-	glColor4ub(m_r, m_g, m_b, m_a);
-}
-
-void Color::unuse()
-{
-	WHITE.use();
-}
-
-void Color::clear()
-{
-	glClearColor(m_r / 255.f, m_g / 255.f, m_b / 255.f, 0);
 }
 
 Color* Color::newCopy()

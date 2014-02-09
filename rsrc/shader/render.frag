@@ -1,12 +1,12 @@
-#version 150
+#version 130
 
 uniform vec4 color;
 
-out vec4 outBuffer;
+out vec4 colorTexture;
 
 void main()
 {
-	outBuffer = color;
+	colorTexture = color;
 }
 
 

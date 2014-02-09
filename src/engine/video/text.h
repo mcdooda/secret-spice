@@ -3,7 +3,7 @@
 
 #include <string>
 #include <SDL/SDL_ttf.h>
-#include "texture.h"
+#include "filetexture.h"
 #include "color.h"
 #include "font.h"
 
@@ -12,7 +12,7 @@ namespace engine
 namespace video
 {
 
-class Text : public Texture
+class Text : public FileTexture
 {
 	public:
 		Text(std::string string, Font* font, Color color);

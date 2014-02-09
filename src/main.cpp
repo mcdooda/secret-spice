@@ -3,7 +3,9 @@
 
 int main(int argc, char* argv[])
 {
-	return Game::run<game::Game>();
+	std::vector<std::string> args;
+	args.assign(argv, argv + argc);
+	return Game::run<game::Game>(args);
 }
 
 

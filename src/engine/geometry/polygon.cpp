@@ -31,15 +31,15 @@ Polygon::~Polygon()
 	delete m_vertices;
 }
 
-void Polygon::draw(video::Attrib vertexAttrib)
+void Polygon::draw(video::Attribute vertexAttribute)
 {
 	if (m_numVertices > 0)
 	{
-		glEnableVertexAttribArray(vertexAttrib);
-		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, m_vertices);
+		glEnableVertexAttribArray(vertexAttribute);
+		glVertexAttribPointer(vertexAttribute, 2, GL_FLOAT, GL_FALSE, 0, m_vertices);
 		glDrawArrays(GL_POLYGON, 0, m_numVertices);
-		glDisableVertexAttribArray(vertexAttrib);
-    }
+		glDisableVertexAttribArray(vertexAttribute);
+	}
 }
 
 Polygon::Polygon() :

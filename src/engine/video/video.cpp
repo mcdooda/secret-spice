@@ -20,11 +20,6 @@ Video::~Video()
 	delete window;
 }
 
-void Video::beginFrame()
-{
-	window->beginFrame();
-}
-
 void Video::endFrame()
 {
 	window->endFrame();

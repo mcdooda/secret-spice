@@ -6,7 +6,7 @@ namespace engine
 namespace video
 {
 
-typedef unsigned int Attrib;
+typedef int Attribute;
 
 } // video
 } // engine
