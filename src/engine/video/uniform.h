@@ -13,7 +13,7 @@ namespace video
 class Uniform
 {
 	public:
-		Uniform(int uniformLocation);
+		Uniform(GLint uniformLocation);
 		Uniform();
 		~Uniform();
 		
@@ -22,7 +22,7 @@ class Uniform
 		void setMatrix4(const geometry::Matrix4& matrix4);
 		
 	private:
-		int m_uniformLocation;
+		GLint m_uniformLocation;
 };
 
 } // video

@@ -27,10 +27,10 @@ void Program::load(std::string fragmentShader, std::string vertexShader)
 {
 	m_valid = true;
 	
-	int fragmentShaderId = compileShader(fragmentShader, GL_FRAGMENT_SHADER);
+	GLuint fragmentShaderId = compileShader(fragmentShader, GL_FRAGMENT_SHADER);
 	checkShader(fragmentShader, fragmentShaderId);
 	
-	int vertexShaderId = compileShader(vertexShader, GL_VERTEX_SHADER);
+	GLuint vertexShaderId = compileShader(vertexShader, GL_VERTEX_SHADER);
 	checkShader(vertexShader, vertexShaderId);
 	
 	m_programId = compileProgram(fragmentShaderId, vertexShaderId);
@@ -40,7 +40,7 @@ void Program::load(std::string fragmentShader, std::string vertexShader)
 	loadUniforms();
 }
 
-void Program::use()
+void Program::use(Window* window)
 {
 	if (!m_valid)
 	{
@@ -50,6 +50,8 @@ void Program::use()
 	
 	glClear(GL_COLOR_BUFFER_BIT);
 	glUseProgram(m_programId);
+	const geometry::Vector2& windowSize = window->getSize();
+	glViewport(0, 0, windowSize.getX(), windowSize.getY());
 }
 
 Attribute Program::getAttribute(std::string attributeName)
@@ -74,58 +76,58 @@ Uniform Program::getUniform(std::string uniformName)
 		return Uniform(-1);
 }
 
-int Program::compileProgram(unsigned int fragmentShaderId, unsigned int vertexShaderId)
+GLuint Program::compileProgram(GLuint fragmentShaderId, GLuint vertexShaderId)
 {
-	int programId = glCreateProgram();
+	GLuint programId = glCreateProgram();
 	glAttachShader(programId, vertexShaderId);
 	glAttachShader(programId, fragmentShaderId);
 	glLinkProgram(programId);
 	return programId;
 }
 
-int Program::compileShader(std::string shader, unsigned int shaderType)
+GLuint Program::compileShader(std::string shader, GLuint shaderType)
 {
-	const char* shaderCode = readCode(shader);
-	int shaderId = glCreateShader(shaderType);
+	const GLchar* shaderCode = readCode(shader);
+	GLuint shaderId = glCreateShader(shaderType);
 	glShaderSource(shaderId, 1, &shaderCode, NULL);
 	delete shaderCode;
 	glCompileShader(shaderId);
 	return shaderId;
 }
 
-void Program::checkProgram(unsigned int programId)
+void Program::checkProgram(GLuint programId)
 {
 	GLint result = GL_FALSE;
 	glGetProgramiv(programId, GL_LINK_STATUS, &result);
 
 	if (!result)
 	{
-		int infoLogLength;
+		GLsizei infoLogLength;
 		glGetProgramiv(programId, GL_INFO_LOG_LENGTH, &infoLogLength);
-		char message[infoLogLength];
+		GLchar message[infoLogLength];
 		glGetProgramInfoLog(programId, infoLogLength, NULL, message);
 		std::cerr << "Warning: " << message << std::endl;
 		m_valid = false;
 	}
 }
 
-void Program::checkShader(std::string shaderFile, unsigned int shaderId)
+void Program::checkShader(std::string shaderFile, GLuint shaderId)
 {
 	GLint result = GL_FALSE;
 	glGetShaderiv(shaderId, GL_COMPILE_STATUS, &result);
 
 	if (!result)
 	{
-		int infoLogLength;
+		GLsizei infoLogLength;
 		glGetShaderiv(shaderId, GL_INFO_LOG_LENGTH, &infoLogLength);
-		char message[infoLogLength];
+		GLchar message[infoLogLength];
 		glGetShaderInfoLog(shaderId, infoLogLength, NULL, message);
 		std::cerr << "Warning while loading shader file '" << shaderFile << "' :" << std::endl << message << std::endl;
 		m_valid = false;
 	}
 }
 
-const char* Program::readCode(std::string shader)
+const GLchar* Program::readCode(std::string shader)
 {
 	std::ifstream file(shader.c_str(), std::ifstream::binary);
 	if (!file.is_open())
@@ -139,7 +141,7 @@ const char* Program::readCode(std::string shader)
 	int length = file.tellg();
 	file.seekg(0, file.beg);
 	
-	char* code = new char[length + 1];
+	GLchar* code = new GLchar[length + 1];
 	file.read(code, length);
 	code[length] = '\0';
 		
@@ -150,32 +152,32 @@ const char* Program::readCode(std::string shader)
 
 void Program::loadAttributes()
 {
-	int total = -1;
+	GLint total = -1;
 	glGetProgramiv(m_programId, GL_ACTIVE_ATTRIBUTES, &total); 
-	for(int i = 0; i < total; i++) {
-		int nameLength;
-		int size;
+	for(GLint i = 0; i < total; i++) {
+		GLsizei nameLength;
+		GLint size;
 		GLenum type = GL_ZERO;
-		char name[100];
+		GLchar name[100];
 		glGetActiveAttrib(m_programId, i, sizeof(name) - 1, &nameLength, &size, &type, name);
 		name[nameLength] = '\0';
-		int location = glGetAttribLocation(m_programId, name);
+		Attribute location = glGetAttribLocation(m_programId, name);
 		m_attributes[name] = location;
 	}
 }
 
 void Program::loadUniforms()
 {
-	int total = -1;
+	GLint total = -1;
 	glGetProgramiv(m_programId, GL_ACTIVE_UNIFORMS, &total); 
-	for(int i = 0; i < total; i++) {
-		int nameLength;
-		int size;
+	for(GLint i = 0; i < total; i++) {
+		GLsizei nameLength;
+		GLint size;
 		GLenum type = GL_ZERO;
-		char name[100];
+		GLchar name[100];
 		glGetActiveUniform(m_programId, i, sizeof(name) - 1, &nameLength, &size, &type, name);
 		name[nameLength] = '\0';
-		int location = glGetUniformLocation(m_programId, name);
+		Attribute location = glGetUniformLocation(m_programId, name);
 		m_uniforms[name] = Uniform(location);
 	}
 }

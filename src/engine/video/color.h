@@ -1,6 +1,8 @@
 #ifndef ENGINE_VIDEO_COLOR_H
 #define ENGINE_VIDEO_COLOR_H
 
+#include <GL/glew.h>
+
 namespace engine
 {
 namespace video
@@ -9,18 +11,18 @@ namespace video
 class Color
 {
 	public:
-		Color(unsigned char r, unsigned char g, unsigned char b, unsigned char a);
-		Color(unsigned char gray);
+		Color(GLfloat r, GLfloat g, GLfloat b, GLfloat a);
+		Color(GLfloat gray);
 
-		inline unsigned char getR() const { return m_r; }
-		inline unsigned char getG() const { return m_g; }
-		inline unsigned char getB() const { return m_b; }
-		inline unsigned char getA() const { return m_a; }
+		inline GLfloat getR() const { return m_r; }
+		inline GLfloat getG() const { return m_g; }
+		inline GLfloat getB() const { return m_b; }
+		inline GLfloat getA() const { return m_a; }
 
-		inline void setR(unsigned char r) { m_r = r; }
-		inline void setG(unsigned char g) { m_g = g; }
-		inline void setB(unsigned char b) { m_b = b; }
-		inline void setA(unsigned char a) { m_a = a; }
+		inline void setR(GLfloat r) { m_r = r; }
+		inline void setG(GLfloat g) { m_g = g; }
+		inline void setB(GLfloat b) { m_b = b; }
+		inline void setA(GLfloat a) { m_a = a; }
 		
 		Color* newCopy();
 		
@@ -28,10 +30,10 @@ class Color
 		static Color BLACK;
 
 	protected:
-		unsigned char m_r;
-		unsigned char m_g;
-		unsigned char m_b;
-		unsigned char m_a;
+		GLfloat m_r;
+		GLfloat m_g;
+		GLfloat m_b;
+		GLfloat m_a;
 };
 
 } // video

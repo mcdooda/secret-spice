@@ -1,12 +1,14 @@
 #ifndef ENGINE_VIDEO_ATTRIB_H
 #define ENGINE_VIDEO_ATTRIB_H
 
+#include <GL/glew.h>
+
 namespace engine
 {
 namespace video
 {
 
-typedef int Attribute;
+typedef GLint Attribute;
 
 } // video
 } // engine

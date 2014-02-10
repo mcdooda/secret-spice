@@ -3,6 +3,8 @@
 
 #include "../engine/game.h"
 
+#include "level.h"
+
 namespace game
 {
 
@@ -13,9 +15,8 @@ class Game : public engine::Game
 		virtual ~Game();
 		
 		void initPasses();
-		void initObjects();
 		void initView();
-		void initLogic();
+		void initLevel();
 		
 		virtual void begin();
 		virtual bool update();
@@ -23,31 +24,17 @@ class Game : public engine::Game
 		virtual void end();
 		
 	private:
-		// drawable objects
-		geometry::Circle circle1;
-		geometry::Circle circle2;
-		
-		geometry::Rectangle unitSquare;
-		
-		geometry::LineSegment x;
-		geometry::LineSegment y;
-		
-		// camera
-		video::View view;
-		
-		// mouse
-		geometry::Vector2 viewMouse;
-		
-		// zoom or unzoom?
-		bool zoom;
-		
 		// program
 		video::Program program;
+		video::View view;
 		
 		// attributes & uniforms
 		video::Attribute vertexAttribute;
 		video::Uniform vpMatrixUniform;
 		video::Uniform colorUniform;
+		
+		// level
+		Level level;
 };
 
 } // game

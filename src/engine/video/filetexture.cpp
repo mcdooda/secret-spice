@@ -21,8 +21,10 @@ FileTexture::FileTexture(std::string filename) :
 		std::cerr << "Warning: error in IMG_Load(" << filename.c_str() << ") : " << IMG_GetError() << std::endl;
 }
 
-Color FileTexture::getPixel(int x, int y)
+Color FileTexture::getPixel(const geometry::Vector2& pixelPosition)
 {
+	int x = pixelPosition.getRoundX();
+	int y = pixelPosition.getRoundY();
 	Uint32 pixel = *((Uint32*) m_surface->pixels + (m_surface->h - y) * m_surface->w + x);
 	Uint8 r, g, b, a;
 	SDL_GetRGBA(pixel, m_surface->format, &r, &g, &b, &a);

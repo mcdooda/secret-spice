@@ -11,8 +11,13 @@ Text::Text(std::string string, Font* font, Color color) :
 	m_font(font),
 	m_color(color)
 {
-	SDL_Color sdlColor = { color.getB(), color.getG(), color.getR() };
+	SDL_Color sdlColor = {
+		(unsigned char)(color.getB() * 255),
+		(unsigned char)(color.getG() * 255),
+		(unsigned char)(color.getR() * 255)
+	};
 	m_surface = TTF_RenderUTF8_Blended(font->m_font, string.c_str(), sdlColor);
+	
 	if (m_surface != NULL)
 		load();
 		

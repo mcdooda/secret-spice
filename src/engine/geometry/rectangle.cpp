@@ -1,3 +1,4 @@
+#include <cstring>
 #include "rectangle.h"
 
 namespace engine
@@ -13,6 +14,11 @@ Rectangle::Rectangle(const Vector2& position, const Vector2& size)
 Rectangle::Rectangle()
 {
 	setPositionSize(Vector2(), Vector2());
+}
+
+Rectangle::~Rectangle()
+{
+	
 }
 
 void Rectangle::setPositionSize(const Vector2& position, const Vector2& size)

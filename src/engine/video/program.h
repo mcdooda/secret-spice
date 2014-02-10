@@ -6,6 +6,7 @@
 #include <vector>
 #include "attribute.h"
 #include "uniform.h"
+#include "window.h"
 
 namespace engine
 {
@@ -22,7 +23,7 @@ class Program
 		
 		inline bool isValid() const { return m_valid; }
 		
-		void use();
+		void use(Window* window);
 		
 		void pass();
 		void render();
@@ -31,19 +32,19 @@ class Program
 		Uniform getUniform(std::string uniformName);
 		
 	private:
-		int compileProgram(unsigned int fragmentShaderId, unsigned int vertexShaderId);
-		int compileShader(std::string shader, unsigned int shaderType);
+		GLuint compileProgram(GLuint fragmentShaderId, GLuint vertexShaderId);
+		GLuint compileShader(std::string shader, GLuint shaderType);
 		
-		void checkProgram(unsigned int programId);
-		void checkShader(std::string shaderFile, unsigned int shaderId);
+		void checkProgram(GLuint programId);
+		void checkShader(std::string shaderFile, GLuint shaderId);
 		
-		const char* readCode(std::string shader);
+		const GLchar* readCode(std::string shader);
 		
 		void loadAttributes();
 		void loadUniforms();
 		
 	protected:
-		unsigned int m_programId;
+		GLuint m_programId;
 		bool m_valid;
 		
 		std::map<std::string, Attribute> m_attributes;

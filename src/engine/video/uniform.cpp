@@ -6,7 +6,7 @@ namespace engine
 namespace video
 {
 
-Uniform::Uniform(int uniformLocation) :
+Uniform::Uniform(GLint uniformLocation) :
 	m_uniformLocation(uniformLocation)
 {
 	
