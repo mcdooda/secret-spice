@@ -14,6 +14,8 @@ class Game : public engine::Game
 		Game(std::vector<std::string> args);
 		virtual ~Game();
 		
+		void initWindow();
+		void initAudio();
 		void initPasses();
 		void initView();
 		void initLevel();
@@ -24,7 +26,10 @@ class Game : public engine::Game
 		virtual void end();
 		
 	private:
-		// program
+		// music
+		audio::Music* music;
+		
+		// video program
 		video::Program program;
 		video::View view;
 		

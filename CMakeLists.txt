@@ -24,4 +24,5 @@ target_link_libraries(
     GL
     GLU
     GLEW
+    fmodex64
 )

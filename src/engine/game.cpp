@@ -26,6 +26,7 @@ void Game::loop()
 	while (running)
 	{
 		engine->time->beginFrame();
+		engine->audio->beginFrame();
 		
 		engine->input->poll();
 		running = update() && !engine->input->window->isClosed();

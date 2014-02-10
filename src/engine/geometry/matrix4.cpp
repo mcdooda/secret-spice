@@ -336,6 +336,7 @@ void Matrix4::rotateZ(float rotateZ)
 	float c = cos(rotateZ);
 	float s = sin(rotateZ);
 	
+	/*
 	set(0, 0, get(0, 0) * c + get(1, 0) * -s);
 	set(0, 1, get(0, 1) * c + get(1, 1) * -s);
 	set(0, 2, get(0, 2) * c + get(1, 2) * -s);
@@ -345,6 +346,16 @@ void Matrix4::rotateZ(float rotateZ)
 	set(1, 1, get(0, 1) * s + get(1, 1) * c);
 	set(1, 2, get(0, 2) * s + get(1, 2) * c);
 	set(1, 3, get(0, 3) * s + get(1, 3) * c);
+	*/
+	
+	Matrix4 m;
+	m.setAll(
+		c,-s, 0, 0,
+		s, c, 0, 0,
+		0, 0, 1, 0,
+		0, 0, 0, 1
+	);
+	*this = m * *this;
 }
 
 void Matrix4::copy(const Matrix4& matrix4)
