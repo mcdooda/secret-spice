@@ -2,6 +2,7 @@
 #define ENGINE_VIDEO_VIDEO_H
 
 #include "window.h"
+#include "color.h"
 
 namespace engine
 {
@@ -15,6 +16,8 @@ class Video
 		~Video();
 		
 		void endFrame();
+		
+		void setClearColor(const Color& color);
 
 	public:
 		Window* window;

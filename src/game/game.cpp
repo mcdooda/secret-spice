@@ -5,14 +5,11 @@
 namespace game
 {
 
-Game::Game(std::vector<std::string> args) : engine::Game(args)
-{
-	
-}
+static const float characterSpeed = 200.0f;
 
-Game::~Game()
+void Game::checkArgs()
 {
-	
+	argCheckString(1);
 }
 
 void Game::initWindow()
@@ -20,9 +17,17 @@ void Game::initWindow()
 	engine->video->window->setTitle("BEATSHAPT");
 }
 
+void Game::initAudioAnalyzer()
+{
+	AudioAnalyzer::open();
+	audioAnalyzer.setInputFileName(argGetString(1));
+	audioAnalyzer.analyze();
+	copy(audioAnalyzer.getTicks().begin(), audioAnalyzer.getTicks().end(), std::back_inserter(ticks));
+}
+
 void Game::initAudio()
 {
-	music = engine->audio->loadMusic("rsrc/music/spica_short.mp3");
+	music = engine->audio->loadMusic(argGetString(1));
 	music->play();
 }
 
@@ -44,64 +49,83 @@ void Game::initView()
 
 void Game::initLevel()
 {
-	float time = engine->time->getTime();
-	level.addPlatform(Platform(geometry::Rectangle(geometry::Vector2(0, 0), geometry::Vector2(10, 10)), time, video::Color::WHITE));
+	video::View levelView;
+	geometry::Vector2 zero;
+	geometry::Vector2 size(10, 10);
+	for (std::list<essentia::Real>::iterator it = ticks.begin(); it != ticks.end(); it++)
+	{
+		essentia::Real tick = *it;
+		video::Color red(1.0f, 0.0f, 0.0f, 1.0f);
+		
+		geometry::Vector2 position = levelView.getViewMatrix() * zero;
+		level.addPlatform(Platform(geometry::Rectangle(position, size), tick, red));
+		
+		std::list<essentia::Real>::iterator nextIt = it;
+		nextIt++;
+		if (nextIt != ticks.end())
+			levelView.move(geometry::Vector2(characterSpeed * (*nextIt - *it), 0));
+	}
 }
 
 void Game::begin()
 {
 	initWindow();
-	initAudio();
+	initAudioAnalyzer();
 	initPasses();
 	initView();
 	initLevel();
+	
+	rotateDirection = 0.0f;
+	
+	initAudio();
+	beginTime = engine->time->getTime();
+	lastTick = beginTime;
+}
+
+void Game::end()
+{
+	AudioAnalyzer::close();
 }
 
 bool Game::update()
 {
 	bool keepRunning = !engine->input->keyboard->isJustPressed(K(ESCAPE));
 	
+	float time = engine->time->getTime() - beginTime;
+	
 	if (engine->input->window->isResized())
 		view.updateProjection(engine->video->window->getSize());
-		
-	static const float loopDuration = 2.0f;
 	
-	view.rotate(engine->time->getFrameTime() * M_PI / loopDuration);
-	
-	audio::Spectrum* spectrum = music->getSpectrum();
-	geometry::Vector2 max = spectrum->getMax();
-	float average = spectrum->getAverage();
-	if (max.getY() > average * 10.0f)
+	if (!ticks.empty() && time > *ticks.begin())
 	{
-		std::cout << max << std::endl;
-		float time = engine->time->getTime();
-		video::Color color(engine->random->nextFloat(0.5f, 1.0f), engine->random->nextFloat(0.5f, 1.0f), engine->random->nextFloat(0.5f, 1.0f), 1.0f);
-		
-		geometry::Vector2 position = view.getRelativePosition(
-			engine->video->window->getSize() / 2 + geometry::Vector2(max.getY() * 200, 0),
-			engine->video->window->getSize()
-		) - geometry::Vector2(5, 5);
-		
-		level.addPlatform(Platform(geometry::Rectangle(position, geometry::Vector2(10, 10)), time, color));
+		lastTick = *ticks.begin();
+		ticks.pop_front();
 	}
 	
-	level.removeOldPlatforms(engine->time->getTime() - 2.0f * loopDuration);
+	level.fadeOldPlatforms(time);
+	level.removeOldPlatforms(time - 3.0f);
+	
+	view.move(geometry::Vector2(-characterSpeed, 0) * engine->time->getFrameTime());
 	
 	return keepRunning;
 }
 
 void Game::draw()
 {
+	float time = engine->time->getTime() - beginTime;
+	float flashDuration = 0.15f;
+	
+	if (time - lastTick < flashDuration)
+		engine->video->setClearColor(video::Color((time - lastTick) / flashDuration / 2.0f, 0.0f, 0.0f, 1.0f));
+		
+	else
+		engine->video->setClearColor(video::Color::BLACK);
+	
 	program.use(engine->video->window);
 	
 	vpMatrixUniform.setMatrix4(view.getViewProjectionMatrix());
 	
 	level.draw(vertexAttribute, colorUniform);
-}
-
-void Game::end()
-{
-	
 }
 
 } // game

@@ -20,9 +20,17 @@ target_link_libraries(
     beatshapt
     SDL2
     SDL2_image
+    SDL2_mixer
     SDL_ttf
     GL
     GLU
     GLEW
-    fmodex64
+    essentia
+    avcodec
+    avformat
+    avutil
+    yaml
+    fftw3f
+    tag
+    samplerate
 )

@@ -32,6 +32,12 @@ void Level::removeOldPlatforms(float maxTime)
 		m_platforms.pop_front();
 }
 
+void Level::fadeOldPlatforms(float maxTime)
+{
+	for (std::list<Platform>::iterator it = m_platforms.begin(); it != m_platforms.end() && it->getTime() < maxTime; it++)
+		it->setColor(video::Color(0.5f));
+}
+
 } // game
 
 

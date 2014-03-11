@@ -25,6 +25,11 @@ void Video::endFrame()
 	window->endFrame();
 }
 
+void Video::setClearColor(const Color& color)
+{
+	glClearColor(color.getR(), color.getG(), color.getB(), color.getA());
+}
+
 } // video
 } // engine
 

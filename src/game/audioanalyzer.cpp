@@ -56,46 +56,6 @@ void AudioAnalyzer::analyze()
 	network.run();
 	
 	m_ticks = pool.value<std::vector<essentia::Real> >("rhythm.ticks");
-	
-	/*
-	essentia::streaming::Algorithm* monoloader2 = factory.create(
-		"MonoLoader",
-		"filename", m_inputFileName,
-		"sampleRate", 44100.0
-	);
-	
-	essentia::streaming::Algorithm* rhythmextractor2 = factory.create(
-		"BeatsLoudness",
-		"sampleRate", 44100.0,
-		"beats", m_ticks
-	);
-	
-	monoloader2->output("audio")				>> rhythmextractor2->input("signal");
-	rhythmextractor2->output("loudness")	>> PC(pool2, "loudness");
-	rhythmextractor2->output("loudnessBandRatio")	>> PC(pool2, "rhythm.loudnessBandRatio");
-	
-	essentia::scheduler::Network network2(monoloader);
-	network2.run();
-	
-	//std::cout << "bpm: " << pool.value<essentia::Real>("rhythm.bpm") << std::endl;
-	//std::cout << "ticks: " << pool.value<std::vector<essentia::Real> >("rhythm.ticks") << std::endl;
-	//std::cout << "ticks detection confidence: " << pool.value<essentia::Real>("rhythm.ticks_confidence") << std::endl; 
-	//std::cout << "estimates: " << pool.value<std::vector<essentia::Real> >("rhythm.estimates") << std::endl;
-	//std::cout << "bpmIntervals: " << pool.value<std::vector<essentia::Real> >("rhythm.bpmIntervals") << std::endl;
-	
-	
-	for (std::vector<essentia::Real>::iterator it = m_ticks.begin(); it != m_ticks.end(); it++)
-	{
-		std::cout << *it << " ";
-	}
-	std::cout << std::endl;
-	
-	std::vector<std::string> names = pool2.descriptorNames();
-	for (std::vector<std::string>::iterator it = names.begin(); it != names.end(); it++)
-	{
-		std::cout << *it << " ";
-	}
-	std::cout << "(" << names.size() << ")" << std::endl;*/
 }
 
 } // game

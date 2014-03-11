@@ -16,6 +16,7 @@ class Platform
 		
 		inline float getTime() const { return m_time; }
 		inline const video::Color& getColor() const { return m_color; }
+		void setColor(const video::Color& color) { m_color = color; }
 		
 	private:
 		geometry::Rectangle m_rectangle;

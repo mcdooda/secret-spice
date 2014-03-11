@@ -1,32 +1,24 @@
 #ifndef ENGINE_AUDIO_MUSIC_H
 #define ENGINE_AUDIO_MUSIC_H
 
-#include <fmod/fmod.hpp>
-#include "audio.h"
-#include "spectrum.h"
+#include <string>
+#include <SDL2/SDL_mixer.h>
 
 namespace engine
 {
 namespace audio
 {
-class Audio;
-class Spectrum;
 
 class Music
 {
 	public:
-		Music(Audio* audio, FMOD::Sound* sound);
+		Music(std::string filename);
 		~Music();
 		
 		void play();
 		
-		Spectrum* getSpectrum();
-		
 	private:
-		Audio* m_audio;
-		FMOD::Sound* m_sound;
-		FMOD::Channel* m_musicChannel;
-		Spectrum* m_spectrum;
+		Mix_Music* m_music;
 };
 
 } // audio

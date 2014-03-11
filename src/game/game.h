@@ -4,6 +4,7 @@
 #include "../engine/game.h"
 
 #include "level.h"
+#include "audioanalyzer.h"
 
 namespace game
 {
@@ -11,14 +12,16 @@ namespace game
 class Game : public engine::Game
 {
 	public:
-		Game(std::vector<std::string> args);
-		virtual ~Game();
+		virtual void checkArgs();
 		
 		void initWindow();
-		void initAudio();
+		void initAudioAnalyzer();
 		void initPasses();
 		void initView();
 		void initLevel();
+		void initAudio();
+		
+		void closeAudioAnalyzer();
 		
 		virtual void begin();
 		virtual bool update();
@@ -28,6 +31,8 @@ class Game : public engine::Game
 	private:
 		// music
 		audio::Music* music;
+		AudioAnalyzer audioAnalyzer;
+		std::list<essentia::Real> ticks;
 		
 		// video program
 		video::Program program;
@@ -40,6 +45,10 @@ class Game : public engine::Game
 		
 		// level
 		Level level;
+		
+		float beginTime;
+		float lastTick;
+		float rotateDirection;
 };
 
 } // game

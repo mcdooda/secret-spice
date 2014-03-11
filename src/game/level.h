@@ -18,6 +18,7 @@ class Level
 		
 		void addPlatform(Platform platform);
 		void removeOldPlatforms(float maxTime);
+		void fadeOldPlatforms(float maxTime);
 		
 	private:
 		std::list<Platform> m_platforms;
