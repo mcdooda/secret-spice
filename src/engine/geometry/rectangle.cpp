@@ -37,7 +37,7 @@ void Rectangle::setSize(const Vector2& size)
 	setPositionSize(position, size);
 }
 
-Vector2 Rectangle::getSize()
+Vector2 Rectangle::getSize() const
 {
 	float width = m_vertices[2] - m_vertices[0];
 	float height = m_vertices[7] - m_vertices[1];

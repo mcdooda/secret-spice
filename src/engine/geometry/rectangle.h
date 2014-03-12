@@ -18,7 +18,7 @@ class Rectangle : public Polygon
 		void setPositionSize(const Vector2& position, const Vector2& size);
 		
 		void setSize(const Vector2& size);
-		Vector2 getSize();
+		Vector2 getSize() const;
 		
 		void setPosition(const Vector2& position);
 		Vector2 getPosition();

@@ -105,7 +105,10 @@ bool Game::update()
 	level.fadeOldPlatforms(time);
 	level.removeOldPlatforms(time - 3.0f);
 	
-	view.move(geometry::Vector2(-characterSpeed, 0) * engine->time->getFrameTime());
+	currentSpectrum = audioAnalyzer.getSpectrum(time);
+	
+	view.reset();
+	view.move(geometry::Vector2(-characterSpeed * time, 0));
 	
 	return keepRunning;
 }
@@ -113,13 +116,29 @@ bool Game::update()
 void Game::draw()
 {
 	float time = engine->time->getTime() - beginTime;
-	float flashDuration = 0.15f;
+	float flashDuration = 0.1f;
 	
 	if (time - lastTick < flashDuration)
-		engine->video->setClearColor(video::Color((time - lastTick) / flashDuration / 2.0f, 0.0f, 0.0f, 1.0f));
+		engine->video->setClearColor(video::Color((time - lastTick) / flashDuration, 0.0f, 0.0f, 1.0f));
 		
 	else
-		engine->video->setClearColor(video::Color::BLACK);
+	{
+		essentia::Real max = 0;
+		int kmax = 0;
+		int k = 0;
+		for (std::vector<essentia::Real>::iterator it = currentSpectrum.begin(); it != currentSpectrum.end(); it++)
+		{
+			if (*it > max)
+			{
+				max = *it;
+				kmax = k;
+			}
+			k++;
+		}
+		//float gray = (float) kmax / currentSpectrum.size();
+		float gray = max;
+		engine->video->setClearColor(video::Color(gray));
+	}
 	
 	program.use(engine->video->window);
 	

@@ -1,6 +1,5 @@
 #include <essentia/algorithmfactory.h>
-#include <essentia/streaming/algorithms/poolstorage.h>
-#include <essentia/scheduler/network.h>
+#include <essentia/essentiamath.h>
 #include "audioanalyzer.h"
 
 namespace game
@@ -30,32 +29,111 @@ void AudioAnalyzer::close()
 
 void AudioAnalyzer::analyze()
 {
-	essentia::Pool pool, pool2;
+	essentia::standard::AlgorithmFactory& factory = essentia::standard::AlgorithmFactory::instance();
 	
-	essentia::streaming::AlgorithmFactory& factory = essentia::streaming::AlgorithmFactory::instance();
-	
-	essentia::streaming::Algorithm* monoloader = factory.create(
+	essentia::standard::Algorithm* monoLoader = factory.create(
 		"MonoLoader",
-		"filename", m_inputFileName,
-		"sampleRate", 44100.0
+		"filename", m_inputFileName
 	);
+	std::vector<essentia::Real> audioBuffer;
 	
-	essentia::streaming::Algorithm* rhythmextractor = factory.create(
+	// -->
+	monoLoader->output("audio").set(audioBuffer);
+	
+	monoLoader->compute();
+	delete monoLoader;
+	
+	essentia::standard::Algorithm* duration = factory.create("Duration");
+	
+	// <--
+	duration->input("signal").set(audioBuffer);
+	
+	// -->
+	duration->output("duration").set(m_duration);
+	
+	duration->compute();
+	delete duration;
+	
+	essentia::standard::Algorithm* rhythmExtractor = factory.create(
 		"RhythmExtractor2013",
 		"method", "multifeature"
 	);
 	
-	monoloader->output("audio")				>> rhythmextractor->input("signal");
-	rhythmextractor->output("ticks")		>> PC(pool, "rhythm.ticks");
-	rhythmextractor->output("confidence")	>> PC(pool, "rhythm.ticks_confidence");
-	rhythmextractor->output("bpm")			>> PC(pool, "rhythm.bpm");
-	rhythmextractor->output("estimates")	>> PC(pool, "rhythm.estimates");
-	rhythmextractor->output("bpmIntervals")	>> PC(pool, "rhythm.bpmIntervals");
+	// <--
+	rhythmExtractor->input("signal").set(audioBuffer);
 	
-	essentia::scheduler::Network network(monoloader);
-	network.run();
+	// -->
+	essentia::Real bpm;
+	essentia::Real confidence;
+	std::vector<essentia::Real> estimates;
+	std::vector<essentia::Real> bpmIntervals;
+	rhythmExtractor->output("bpm").set(bpm);
+	rhythmExtractor->output("ticks").set(m_ticks);
+	rhythmExtractor->output("confidence").set(confidence);
+	rhythmExtractor->output("estimates").set(estimates);
+	rhythmExtractor->output("bpmIntervals").set(bpmIntervals);
 	
-	m_ticks = pool.value<std::vector<essentia::Real> >("rhythm.ticks");
+	// compute
+	rhythmExtractor->compute();
+	
+	delete rhythmExtractor;
+	
+	essentia::standard::Algorithm* frameCutter = factory.create(
+		"FrameCutter"
+	);
+	std::vector<Real> frame;
+	
+	// <--
+	frameCutter->input("signal").set(audioBuffer);
+	
+	// -->
+	frameCutter->output("frame").set(frame);
+	
+	essentia::standard::Algorithm* windowing = factory.create(
+		"Windowing",
+		"type", "blackmanharris62"
+	);
+	std::vector<Real> windowedFrame;
+	
+	// <--
+	windowing->input("frame").set(frame);
+	
+	// -->
+	windowing->output("frame").set(windowedFrame);
+	
+	essentia::standard::Algorithm* spectrum = factory.create("Spectrum");
+	std::vector<essentia::Real> spectrumBuffer;
+	
+	// <--
+	spectrum->input("frame").set(windowedFrame);
+	
+	// -->
+	spectrum->output("spectrum").set(spectrumBuffer);
+	
+	while (true) {
+		frameCutter->compute();
+		
+		if (!frame.size())
+			break;
+			
+		if (essentia::isSilent(frame))
+			continue;
+
+		windowing->compute();
+		spectrum->compute();
+		
+		m_spectrums.push_back(spectrumBuffer);
+	}
+	
+	delete frameCutter;
+	delete windowing;
+	delete spectrum;
+}
+
+const std::vector<essentia::Real>& AudioAnalyzer::getSpectrum(float time) const
+{
+	int index = floor(time / m_duration * m_spectrums.size());
+	return m_spectrums[index];
 }
 
 } // game
