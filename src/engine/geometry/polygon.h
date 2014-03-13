@@ -3,6 +3,7 @@
 
 #include <vector>
 #include "vector2.h"
+#include "matrix4.h"
 #include "../video/attribute.h"
 
 namespace engine
@@ -20,13 +21,15 @@ class Polygon
 		
 		void draw(video::Attribute vertexAttribute);
 		
+		void transform(const Matrix4& matrix4);
+		
 	protected:
 		Polygon();
 		
 		void initVertices(const std::vector<Vector2>& vertices);
 		
 	protected:
-		float* m_vertices;
+		Vector2* m_vertices;
 		unsigned int m_numVertices;
 };
 

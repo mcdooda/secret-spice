@@ -39,8 +39,8 @@ void Rectangle::setSize(const Vector2& size)
 
 Vector2 Rectangle::getSize() const
 {
-	float width = m_vertices[2] - m_vertices[0];
-	float height = m_vertices[7] - m_vertices[1];
+	float width = m_vertices[1].getX() - m_vertices[0].getX();
+	float height = m_vertices[3].getY() - m_vertices[0].getY();
 	return Vector2(width, height);
 }
 
@@ -52,9 +52,7 @@ void Rectangle::setPosition(const Vector2& position)
 
 Vector2 Rectangle::getPosition()
 {
-	float x = m_vertices[0];
-	float y = m_vertices[1];
-	return Vector2(x, y);
+	return m_vertices[0];
 }
 
 } // geometry

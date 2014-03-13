@@ -9,7 +9,7 @@ namespace game
 class Platform
 {
 	public:
-		Platform(const geometry::Rectangle& rectangle, float time, const video::Color& color);
+		Platform(const geometry::Rectangle& rectangle, const geometry::Vector2& center, float angle, float angleY, float time, const video::Color& color);
 		~Platform();
 		
 		void draw(video::Attribute vertexAttribute, const video::Uniform& colorUniform);
@@ -22,8 +22,16 @@ class Platform
 		inline const geometry::Vector2 getSize() const { return m_rectangle.getSize(); }
 		inline void setSize(const geometry::Vector2& size) { m_rectangle.setSize(size); }
 		
+		inline const geometry::Vector2& getCenter() const { return m_center; }
+		
+		inline float getAngle() const { return m_angle; }
+		inline float getAngleY() const { return m_angleY; }
+		
 	private:
 		geometry::Rectangle m_rectangle;
+		geometry::Vector2 m_center;
+		float m_angle;
+		float m_angleY;
 		float m_time;
 		video::Color m_color;
 };

@@ -33,7 +33,7 @@ class Game : public engine::Game
 		audio::Music* music;
 		AudioAnalyzer audioAnalyzer;
 		std::list<essentia::Real> ticks;
-		std::vector<essentia::Real> currentSpectrum;
+		Spectrum* currentSpectrum;
 		
 		// video program
 		video::Program program;

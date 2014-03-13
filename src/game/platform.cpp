@@ -3,8 +3,11 @@
 namespace game
 {
 
-Platform::Platform(const geometry::Rectangle& rectangle, float time, const video::Color& color) :
+Platform::Platform(const geometry::Rectangle& rectangle, const geometry::Vector2& center, float angle, float angleY, float time, const video::Color& color) :
 	m_rectangle(rectangle),
+	m_center(center),
+	m_angle(angle),
+	m_angleY(angleY),
 	m_time(time),
 	m_color(color)
 {

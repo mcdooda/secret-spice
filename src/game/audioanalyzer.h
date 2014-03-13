@@ -2,7 +2,9 @@
 #define GAME_AUDIO_ANALYZER_H
 
 #include <string>
-#include <essentia/streaming/algorithms/poolstorage.h>
+#include <essentia/essentia.h>
+
+#include "spectrum.h"
 
 namespace game
 {
@@ -22,14 +24,20 @@ class AudioAnalyzer
 		essentia::Real getDuration() const { return m_duration; }
 		const std::vector<essentia::Real>& getTicks() const { return m_ticks; }
 		
-		const std::vector<essentia::Real>& getSpectrum(float time) const;
+		void getSpectrum(float time, Spectrum** spectrum) const;
+		
+		inline essentia::Real getMaxAverage() const { return m_maxAverage; }
+		
+	private:
+		void computeMaxAverage();
 		
 	private:
 		std::string m_inputFileName;
 		
 		essentia::Real m_duration;
 		std::vector<essentia::Real> m_ticks;
-		std::vector<std::vector<essentia::Real> > m_spectrums;
+		std::vector<Spectrum> m_spectrums;
+		essentia::Real m_maxAverage;
 };
 
 } // game

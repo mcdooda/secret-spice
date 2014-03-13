@@ -18,7 +18,9 @@ class View
 		
 		void zoom(float factor);
 		void move(geometry::Vector2 position);
-		void rotate(float angle);
+		void rotateX(float angle);
+		void rotateY(float angle);
+		void rotateZ(float angle);
 		
 		geometry::Vector2 getRelativePosition(const geometry::Vector2& windowPosition, const geometry::Vector2& windowSize) const;
 

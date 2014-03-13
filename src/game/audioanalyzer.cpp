@@ -122,18 +122,34 @@ void AudioAnalyzer::analyze()
 		windowing->compute();
 		spectrum->compute();
 		
-		m_spectrums.push_back(spectrumBuffer);
+		m_spectrums.push_back(Spectrum(spectrumBuffer));
 	}
 	
 	delete frameCutter;
 	delete windowing;
 	delete spectrum;
+	
+	computeMaxAverage();
 }
 
-const std::vector<essentia::Real>& AudioAnalyzer::getSpectrum(float time) const
+void AudioAnalyzer::getSpectrum(float time, Spectrum** spectrum) const
 {
-	int index = floor(time / m_duration * m_spectrums.size());
-	return m_spectrums[index];
+	unsigned int index = floor(time / m_duration * m_spectrums.size());
+	
+	if (index < m_spectrums.size())
+		*spectrum = (Spectrum*) &m_spectrums[index];
+	
+	else
+		*spectrum = NULL;
+}
+
+void AudioAnalyzer::computeMaxAverage()
+{
+	m_maxAverage = 0;
+	for (std::vector<Spectrum>::iterator it = m_spectrums.begin(); it != m_spectrums.end(); it++)
+		m_maxAverage += it->getMax().getY();
+		
+	m_maxAverage /= m_spectrums.size();
 }
 
 } // game
