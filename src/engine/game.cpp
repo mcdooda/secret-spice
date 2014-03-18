@@ -7,7 +7,7 @@ namespace engine
 Game::Game()
 {
 	engine = new Engine();
-	engine->video->window->open(engine->video->window->getDesktopSize() / 2, false, true);
+	engine->video->window->open(engine->video->window->getDesktopSize(), true, true);
 }
 
 Game::~Game()

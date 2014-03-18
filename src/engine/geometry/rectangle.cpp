@@ -23,12 +23,12 @@ Rectangle::~Rectangle()
 
 void Rectangle::setPositionSize(const Vector2& position, const Vector2& size)
 {
-	std::vector<Vector2> vertices;
-	vertices.push_back(position);
-	vertices.push_back(Vector2(position.getX() + size.getX(), position.getY()));
-	vertices.push_back(position + size);
-	vertices.push_back(Vector2(position.getX(), position.getY() + size.getY()));
-	initVertices(vertices);
+	m_vertices.clear();
+	m_vertices.reserve(4);
+	m_vertices.push_back(position);
+	m_vertices.push_back(Vector2(position.getX() + size.getX(), position.getY()));
+	m_vertices.push_back(position + size);
+	m_vertices.push_back(Vector2(position.getX(), position.getY() + size.getY()));
 }
 
 void Rectangle::setSize(const Vector2& size)

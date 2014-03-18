@@ -1,3 +1,4 @@
+#include <iostream>
 #include "platform.h"
 
 namespace game

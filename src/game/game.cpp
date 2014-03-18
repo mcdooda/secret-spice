@@ -33,11 +33,11 @@ void Game::initAudio()
 
 void Game::initPasses()
 {
-	program.load("rsrc/shader/render.frag", "rsrc/shader/render.vert");
+	levelProgram.load("rsrc/shader/renderlevel.frag", "rsrc/shader/renderlevel.vert");
 	
-	vertexAttribute = program.getAttribute("position");
-	vpMatrixUniform = program.getUniform("vpMatrix");
-	colorUniform = program.getUniform("color");
+	levelVertexAttribute = levelProgram.getAttribute("position");
+	levelVpMatrixUniform = levelProgram.getUniform("vpMatrix");
+	levelColorUniform = levelProgram.getUniform("color");
 }
 
 void Game::initView()
@@ -51,27 +51,25 @@ void Game::initLevel()
 {
 	video::View levelView;
 	geometry::Vector2 zero;
+	video::Color red(1.0f, 0.0f, 0.0f, 1.0f);
+	video::Color purple(1.0f, 0.0f, 1.0f, 1.0f);
 	geometry::Rectangle rectangle(geometry::Vector2(-1.0f, -1.0f), geometry::Vector2(2.0f, 2.0f));
 	int i = 0;
-	float lastAngleY = 0;
+	float angleY = 0;
 	for (std::list<essentia::Real>::iterator it = ticks.begin(); it != ticks.end(); it++)
 	{
 		essentia::Real tick = *it;
-		video::Color red(1.0f, 0.0f, 0.0f, 1.0f);
 		
 		geometry::Vector2 center = levelView.getViewMatrix() * zero;
 		
 		audioAnalyzer.getSpectrum(tick, &currentSpectrum);
 		float angle = -(currentSpectrum->getMax().getY() - audioAnalyzer.getMaxAverage() / 2);
-		float angleY = lastAngleY;
-		if (currentSpectrum->getMax().getY() > audioAnalyzer.getMaxAverage() * 2.0f)
+		bool strongPeak = false;
+		if (currentSpectrum->getMax().getY() > audioAnalyzer.getMaxAverage() * 2.8f)
 		{
-			if (lastAngleY == 0)
-				angleY = M_PI;
-			else
-				angleY = 0;
+			strongPeak = true;
+			angleY += M_PI;
 		}
-		lastAngleY = angleY;
 		
 		geometry::Matrix4 matrix4;
 		matrix4.scale(20.0f);
@@ -81,14 +79,22 @@ void Game::initLevel()
 		geometry::Rectangle r = rectangle;
 		r.transform(matrix4);
 		
-		level.addPlatform(Platform(r, center, angle, angleY, tick, red));
+		if (currentSpectrum->getMax().getY() > audioAnalyzer.getMaxAverage() * 0.5f)
+			level.addPlatform(Platform(r, center, angle, angleY, tick, strongPeak ? purple : red));
+			
+		else
+		{
+			it = ticks.erase(it);
+			it--;
+		}
 		
 		std::list<essentia::Real>::iterator nextIt = it;
 		nextIt++;
 		if (nextIt != ticks.end())
 		{
 			essentia::Real nextTick = *nextIt;
-			levelView.move(geometry::Vector2(characterSpeed * (nextTick - tick), 0));
+			geometry::Vector2 move(characterSpeed * (nextTick - tick), 0);
+			levelView.move(move);
 		}
 		
 		i++;
@@ -107,7 +113,7 @@ void Game::begin()
 	
 	initAudio();
 	beginTime = engine->time->getTime();
-	lastTick = beginTime;
+	lastTick = -2.0f;
 }
 
 void Game::end()
@@ -131,37 +137,38 @@ bool Game::update()
 	}
 	
 	level.fadeOldPlatforms(time);
-	level.removeOldPlatforms(time - 3.0f);
+	level.removeOldPlatforms(time - 7.0f);
 	
 	Platform* previousPlatform;
 	Platform* nextPlatform;
 	level.getCurrentPlatforms(time, &previousPlatform, &nextPlatform);
 	
-	float viewAngle;
-	float viewAngleY;
-	geometry::Vector2 viewPosition;
-	
-	if (nextPlatform != NULL)
+	if (previousPlatform != NULL && nextPlatform != NULL)
 	{
-		float alpha = (time - previousPlatform->getTime()) / (nextPlatform->getTime() - previousPlatform->getTime());
-		alpha = powf(alpha, 5.0f);
+		float viewAngle;
+		float viewAngleY;
+		geometry::Vector2 viewPosition;
+		
+		float alpha;
+		if (previousPlatform != nextPlatform)
+		{
+			alpha = (time - previousPlatform->getTime()) / (nextPlatform->getTime() - previousPlatform->getTime());
+			alpha = powf(alpha, 5.0f);
+		}
+		else
+			alpha = 0;
+		
 		viewPosition = (previousPlatform->getCenter() + (nextPlatform->getCenter() - previousPlatform->getCenter()) * alpha) * -1;
 		viewAngle = -(previousPlatform->getAngle() + (nextPlatform->getAngle() - previousPlatform->getAngle()) * alpha);
 		viewAngleY = -(previousPlatform->getAngleY() + (nextPlatform->getAngleY() - previousPlatform->getAngleY()) * alpha);
+		
+		view.reset();
+		view.move(viewPosition);
+		view.rotateZ(viewAngle);
+		view.rotateY(viewAngleY);
+		
+		audioAnalyzer.getSpectrum(time, &currentSpectrum);
 	}
-	else
-	{
-		viewPosition = previousPlatform->getCenter() * -1;
-		viewAngle = -previousPlatform->getAngle();
-		viewAngleY = previousPlatform->getAngle();
-	}
-	
-	audioAnalyzer.getSpectrum(time, &currentSpectrum);
-	
-	view.reset();
-	view.move(viewPosition);
-	view.rotateZ(viewAngle);
-	view.rotateY(viewAngleY);
 	
 	return keepRunning;
 }
@@ -173,7 +180,7 @@ void Game::draw()
 	
 	if (time - lastTick < flashDuration)
 		engine->video->setClearColor(video::Color((time - lastTick) / flashDuration, 0.0f, 0.0f, 1.0f));
-		
+	
 	else if (currentSpectrum != NULL)
 	{
 		float gray = currentSpectrum->getMax().getY();
@@ -182,11 +189,10 @@ void Game::draw()
 	else
 		engine->video->setClearColor(video::Color::BLACK);
 	
-	program.use(engine->video->window);
-	
-	vpMatrixUniform.setMatrix4(view.getViewProjectionMatrix());
-	
-	level.draw(vertexAttribute, colorUniform);
+	levelProgram.use(engine->video->window);
+	levelProgram.clear();
+	levelVpMatrixUniform.setMatrix4(view.getViewProjectionMatrix());
+	level.draw(time + 7.0f, levelVertexAttribute, levelColorUniform);
 }
 
 } // game

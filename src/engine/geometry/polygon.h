@@ -14,23 +14,20 @@ namespace geometry
 class Polygon
 {
 	public:
+		Polygon();
 		Polygon(const std::vector<Vector2>& vertices);
 		Polygon(const Polygon& polygon);
 		void operator=(const Polygon& polygon);
 		virtual ~Polygon();
+		
+		inline void setVertices(const std::vector<Vector2>& vertices) { m_vertices = vertices; }
 		
 		void draw(video::Attribute vertexAttribute);
 		
 		void transform(const Matrix4& matrix4);
 		
 	protected:
-		Polygon();
-		
-		void initVertices(const std::vector<Vector2>& vertices);
-		
-	protected:
-		Vector2* m_vertices;
-		unsigned int m_numVertices;
+		std::vector<Vector2> m_vertices;
 };
 
 } // geometry

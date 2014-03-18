@@ -36,15 +36,15 @@ class Game : public engine::Game
 		Spectrum* currentSpectrum;
 		
 		// video program
-		video::Program program;
 		video::View view;
 		
 		// attributes & uniforms
-		video::Attribute vertexAttribute;
-		video::Uniform vpMatrixUniform;
-		video::Uniform colorUniform;
+		video::Program levelProgram;
+		video::Attribute levelVertexAttribute;
+		video::Uniform levelVpMatrixUniform;
+		video::Uniform levelColorUniform;
 		
-		// level
+		// game objects
 		Level level;
 		
 		float beginTime;

@@ -14,7 +14,7 @@ class Level
 		Level();
 		~Level();
 		
-		void draw(video::Attribute vertexAttribute, const video::Uniform& colorUniform);
+		void draw(float maxTime, video::Attribute vertexAttribute, const video::Uniform& colorUniform);
 		
 		void getCurrentPlatforms(float time, Platform** previousPlatform, Platform** nextPlatform);
 		

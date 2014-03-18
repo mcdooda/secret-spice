@@ -31,6 +31,9 @@ void AudioAnalyzer::analyze()
 {
 	essentia::standard::AlgorithmFactory& factory = essentia::standard::AlgorithmFactory::instance();
 	
+	/*
+	 * MonoLoader
+	 */
 	essentia::standard::Algorithm* monoLoader = factory.create(
 		"MonoLoader",
 		"filename", m_inputFileName
@@ -43,6 +46,9 @@ void AudioAnalyzer::analyze()
 	monoLoader->compute();
 	delete monoLoader;
 	
+	/*
+	 * Duration
+	 */
 	essentia::standard::Algorithm* duration = factory.create("Duration");
 	
 	// <--
@@ -54,6 +60,9 @@ void AudioAnalyzer::analyze()
 	duration->compute();
 	delete duration;
 	
+	/*
+	 * RhythmExtractor2013
+	 */
 	essentia::standard::Algorithm* rhythmExtractor = factory.create(
 		"RhythmExtractor2013",
 		"method", "multifeature"
@@ -78,6 +87,9 @@ void AudioAnalyzer::analyze()
 	
 	delete rhythmExtractor;
 	
+	/*
+	 * FrameCutter
+	 */
 	essentia::standard::Algorithm* frameCutter = factory.create(
 		"FrameCutter"
 	);
@@ -89,6 +101,9 @@ void AudioAnalyzer::analyze()
 	// -->
 	frameCutter->output("frame").set(frame);
 	
+	/*
+	 * Windowing
+	 */
 	essentia::standard::Algorithm* windowing = factory.create(
 		"Windowing",
 		"type", "blackmanharris62"
@@ -101,6 +116,9 @@ void AudioAnalyzer::analyze()
 	// -->
 	windowing->output("frame").set(windowedFrame);
 	
+	/*
+	 * Spectrum
+	 */
 	essentia::standard::Algorithm* spectrum = factory.create("Spectrum");
 	std::vector<essentia::Real> spectrumBuffer;
 	
@@ -110,6 +128,18 @@ void AudioAnalyzer::analyze()
 	// -->
 	spectrum->output("spectrum").set(spectrumBuffer);
 	
+	/*
+	 * StrongPeak
+	 */
+	essentia::standard::Algorithm* strongPeak = factory.create("StrongPeak");
+	essentia::Real strongPeakValue;
+	
+	// <--
+	strongPeak->input("spectrum").set(spectrumBuffer);
+	
+	// -->
+	strongPeak->output("strongPeak").set(strongPeakValue);
+	
 	while (true) {
 		frameCutter->compute();
 		
@@ -118,11 +148,12 @@ void AudioAnalyzer::analyze()
 			
 		if (essentia::isSilent(frame))
 			continue;
-
+		
 		windowing->compute();
 		spectrum->compute();
+		strongPeak->compute();
 		
-		m_spectrums.push_back(Spectrum(spectrumBuffer));
+		m_spectrums.push_back(Spectrum(spectrumBuffer, strongPeakValue));
 	}
 	
 	delete frameCutter;

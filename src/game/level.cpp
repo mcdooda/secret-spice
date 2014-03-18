@@ -1,3 +1,4 @@
+#include <iostream>
 #include "level.h"
 
 namespace game
@@ -13,31 +14,43 @@ Level::~Level()
 	
 }
 
-void Level::draw(video::Attribute vertexAttribute, const video::Uniform& colorUniform)
+void Level::draw(float maxTime, video::Attribute vertexAttribute, const video::Uniform& colorUniform)
 {
-	for (std::list<Platform>::iterator it = m_platforms.begin(); it != m_platforms.end(); it++)
+	for (std::list<Platform>::iterator it = m_platforms.begin(); it != m_platforms.end() && it->getTime() < maxTime; it++)
 		it->draw(vertexAttribute, colorUniform);
 }
 
 void Level::getCurrentPlatforms(float time, Platform** previousPlatform, Platform** nextPlatform)
 {
-	*previousPlatform = NULL;
-	*nextPlatform = NULL;
-	for (std::list<Platform>::iterator it = m_platforms.begin(); it != m_platforms.end(); it++)
+	if (m_platforms.empty())
 	{
-		if (it->getTime() > time)
-		{
-			*nextPlatform = &(*it);
-			it--;
-			*previousPlatform = &(*it);
-			break;
-		}
+		*previousPlatform = NULL;
+		*nextPlatform = NULL;
 	}
-	if (*previousPlatform == NULL)
+	else if (time < m_platforms.front().getTime())
 	{
-		std::list<Platform>::iterator it = m_platforms.end();
-		it--;
-		*previousPlatform = &(*it);
+		*previousPlatform = &m_platforms.front();
+		*nextPlatform = *previousPlatform;
+	}
+	else
+	{
+		*previousPlatform = NULL;
+		*nextPlatform = NULL;
+		for (std::list<Platform>::iterator it = m_platforms.begin(); it != m_platforms.end(); it++)
+		{
+			if (it->getTime() > time)
+			{
+				*nextPlatform = &(*it);
+				it--;
+				*previousPlatform = &(*it);
+				break;
+			}
+		}
+		if (*previousPlatform == NULL)
+		{
+			*previousPlatform = &m_platforms.back();
+			*nextPlatform = *previousPlatform;
+		}
 	}
 }
 

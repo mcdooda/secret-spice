@@ -48,10 +48,14 @@ void Program::use(Window* window)
 		exit(1);
 	}
 	
-	glClear(GL_COLOR_BUFFER_BIT);
 	glUseProgram(m_programId);
 	const geometry::Vector2& windowSize = window->getSize();
 	glViewport(0, 0, windowSize.getX(), windowSize.getY());
+}
+
+void Program::clear()
+{
+	glClear(GL_COLOR_BUFFER_BIT);
 }
 
 Attribute Program::getAttribute(std::string attributeName)

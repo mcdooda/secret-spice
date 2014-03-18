@@ -39,16 +39,15 @@ void Circle::setRadius(float radius)
 void Circle::buildCircle()
 {
 	const int numVertices = 512;
-	std::vector<Vector2> vertices;
+	m_vertices.clear();
+	m_vertices.reserve(numVertices);
 	for (int i = 0; i < numVertices; i++)
 	{
-		Vector2 vertex(
+		m_vertices.push_back(Vector2(
 			m_center.getX() + cos(M_PI * 2 * (float) i / numVertices) * m_radius,
 			m_center.getY() + sin(M_PI * 2 * (float) i / numVertices) * m_radius
-		);
-		vertices.push_back(vertex);
+		));
 	}
-	initVertices(vertices);
 }
 
 } // geometry
