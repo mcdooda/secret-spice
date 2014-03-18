@@ -4,20 +4,16 @@
 namespace engine
 {
 
-Game::Game()
+Game::Game(const std::vector<std::string>& args) :
+	m_args(args)
 {
-	video->window->open(video->window->getDesktopSize(), true, true);
+	checkArgs();
+	video->window->open(video->window->getDesktopSize() / 2, false, true);
 }
 
 Game::~Game()
 {
 	
-}
-
-void Game::setArgs(std::vector<std::string> args)
-{
-	m_args = args;
-	checkArgs();
 }
 
 void Game::checkArgs()
@@ -53,11 +49,6 @@ int Game::argGetInt(int index)
 	return index >= 0 && index < (int) m_args.size() ? atoi(m_args[index].c_str()) : 0;
 }
 
-void Game::begin()
-{
-	
-}
-
 void Game::loop()
 {
 	bool running = true;
@@ -66,18 +57,15 @@ void Game::loop()
 		time->beginFrame();
 		
 		input->poll();
-		running = update() && !input->window->isClosed();
-	
-		draw();
+		
+		m_stop = false;
+		getStateMachine()->update();
+		running = !input->window->isClosed() && !m_stop;
+		
 		video->endFrame();
 		
 		time->endFrame();
 	}
-}
-
-void Game::end()
-{
-	
 }
 
 } // engine

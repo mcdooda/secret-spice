@@ -12,7 +12,7 @@ namespace engine
 
 Engine::Engine()
 {
-	openSDL();
+	SDL_Init(SDL_INIT_VIDEO);
 	time = new time::Time;
 	video = new video::Video;
 	audio = new audio::Audio;
@@ -22,24 +22,12 @@ Engine::Engine()
 
 Engine::~Engine()
 {
-	closeSDL();
+	SDL_Quit();
 	delete time;
 	delete video;
 	delete audio;
 	delete random;
 	delete input;
-}
-
-/* private */
-
-void Engine::openSDL()
-{
-	SDL_Init(SDL_INIT_VIDEO);
-}
-
-void Engine::closeSDL()
-{
-	SDL_Quit();
 }
 
 } // engine

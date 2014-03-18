@@ -12,23 +12,12 @@ namespace game
 class Game : public engine::Game
 {
 	public:
+		Game(const std::vector<std::string>& args);
+		virtual ~Game();
+		
 		virtual void checkArgs();
 		
-		void initWindow();
-		void initAudioAnalyzer();
-		void initPasses();
-		void initView();
-		void initLevel();
-		void initAudio();
-		
-		void closeAudioAnalyzer();
-		
-		virtual void begin();
-		virtual bool update();
-		virtual void draw();
-		virtual void end();
-		
-	private:
+	public:
 		// music
 		audio::Music* music;
 		AudioAnalyzer audioAnalyzer;

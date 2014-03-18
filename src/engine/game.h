@@ -21,14 +21,12 @@
 namespace engine
 {
 
-class Game : public Engine
+class Game : public Engine, public state::Agent
 {
 	public:
-		Game();
+		Game(const std::vector<std::string>& args);
 		virtual ~Game();
 		
-		/* arguments */
-		void setArgs(std::vector<std::string> args);
 		virtual void checkArgs();
 		
 		void argCheckString(int index);
@@ -39,25 +37,20 @@ class Game : public Engine
 		
 		/* game logic */
 		void loop();
-		virtual void begin();
-		virtual bool update() = 0;
-		virtual void draw() = 0;
-		virtual void end();
+		inline void stop() { m_stop = true; }
 		
 		/* game launcher */
 		template <class T> static int run(std::vector<std::string> args)
 		{
-			T* game = new T();
-			game->setArgs(args);
-			game->begin();
+			T* game = new T(args);
 			game->loop();
-			game->end();
 			delete game;
 			return 0;
 		}
 		
 	private:
 		std::vector<std::string> m_args;
+		bool m_stop;
 };
 
 } // engine

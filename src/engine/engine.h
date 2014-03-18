@@ -15,10 +15,6 @@ class Engine
 	public:
 		Engine();
 		virtual ~Engine();
-
-	private:
-		void openSDL();
-		void closeSDL();
 		
 	public:
 		input::Input* input;
