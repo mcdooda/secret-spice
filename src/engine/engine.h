@@ -14,7 +14,7 @@ class Engine
 {
 	public:
 		Engine();
-		~Engine();
+		virtual ~Engine();
 
 	private:
 		void openSDL();

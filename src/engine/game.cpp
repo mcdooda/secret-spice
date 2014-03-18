@@ -6,13 +6,12 @@ namespace engine
 
 Game::Game()
 {
-	engine = new Engine();
-	engine->video->window->open(engine->video->window->getDesktopSize(), true, true);
+	video->window->open(video->window->getDesktopSize(), true, true);
 }
 
 Game::~Game()
 {
-	delete engine;
+	
 }
 
 void Game::setArgs(std::vector<std::string> args)
@@ -64,15 +63,15 @@ void Game::loop()
 	bool running = true;
 	while (running)
 	{
-		engine->time->beginFrame();
+		time->beginFrame();
 		
-		engine->input->poll();
-		running = update() && !engine->input->window->isClosed();
+		input->poll();
+		running = update() && !input->window->isClosed();
 	
 		draw();
-		engine->video->endFrame();
+		video->endFrame();
 		
-		engine->time->endFrame();
+		time->endFrame();
 	}
 }
 

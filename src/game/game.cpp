@@ -14,7 +14,7 @@ void Game::checkArgs()
 
 void Game::initWindow()
 {
-	engine->video->window->setTitle("BEATSHAPT");
+	video->window->setTitle("BEATSHAPT");
 }
 
 void Game::initAudioAnalyzer()
@@ -27,7 +27,7 @@ void Game::initAudioAnalyzer()
 
 void Game::initAudio()
 {
-	music = engine->audio->loadMusic(argGetString(1));
+	music = audio->loadMusic(argGetString(1));
 	music->play();
 }
 
@@ -44,7 +44,7 @@ void Game::initView()
 {
 	// camera
 	view = video::View();
-	view.updateProjection(engine->video->window->getSize());
+	view.updateProjection(video->window->getSize());
 }
 
 void Game::initLevel()
@@ -112,7 +112,7 @@ void Game::begin()
 	rotateDirection = 0.0f;
 	
 	initAudio();
-	beginTime = engine->time->getTime();
+	beginTime = time->getTime();
 	lastTick = -2.0f;
 }
 
@@ -123,25 +123,25 @@ void Game::end()
 
 bool Game::update()
 {
-	bool keepRunning = !engine->input->keyboard->isJustPressed(K(ESCAPE));
+	bool keepRunning = !input->keyboard->isJustPressed(K(ESCAPE));
 	
-	float time = engine->time->getTime() - beginTime;
+	float currentTime = time->getTime() - beginTime;
 	
-	if (engine->input->window->isResized())
-		view.updateProjection(engine->video->window->getSize());
+	if (input->window->isResized())
+		view.updateProjection(video->window->getSize());
 	
-	if (!ticks.empty() && time > *ticks.begin())
+	if (!ticks.empty() && currentTime > *ticks.begin())
 	{
 		lastTick = *ticks.begin();
 		ticks.pop_front();
 	}
 	
-	level.fadeOldPlatforms(time);
-	level.removeOldPlatforms(time - 7.0f);
+	level.fadeOldPlatforms(currentTime);
+	level.removeOldPlatforms(currentTime - 7.0f);
 	
 	Platform* previousPlatform;
 	Platform* nextPlatform;
-	level.getCurrentPlatforms(time, &previousPlatform, &nextPlatform);
+	level.getCurrentPlatforms(currentTime, &previousPlatform, &nextPlatform);
 	
 	if (previousPlatform != NULL && nextPlatform != NULL)
 	{
@@ -152,7 +152,7 @@ bool Game::update()
 		float alpha;
 		if (previousPlatform != nextPlatform)
 		{
-			alpha = (time - previousPlatform->getTime()) / (nextPlatform->getTime() - previousPlatform->getTime());
+			alpha = (currentTime - previousPlatform->getTime()) / (nextPlatform->getTime() - previousPlatform->getTime());
 			alpha = powf(alpha, 5.0f);
 		}
 		else
@@ -167,7 +167,7 @@ bool Game::update()
 		view.rotateZ(viewAngle);
 		view.rotateY(viewAngleY);
 		
-		audioAnalyzer.getSpectrum(time, &currentSpectrum);
+		audioAnalyzer.getSpectrum(currentTime, &currentSpectrum);
 	}
 	
 	return keepRunning;
@@ -175,24 +175,24 @@ bool Game::update()
 
 void Game::draw()
 {
-	float time = engine->time->getTime() - beginTime;
+	float currentTime = time->getTime() - beginTime;
 	float flashDuration = 0.1f;
 	
-	if (time - lastTick < flashDuration)
-		engine->video->setClearColor(video::Color((time - lastTick) / flashDuration, 0.0f, 0.0f, 1.0f));
+	if (currentTime - lastTick < flashDuration)
+		video->setClearColor(video::Color((currentTime - lastTick) / flashDuration, 0.0f, 0.0f, 1.0f));
 	
 	else if (currentSpectrum != NULL)
 	{
 		float gray = currentSpectrum->getMax().getY();
-		engine->video->setClearColor(video::Color(gray));
+		video->setClearColor(video::Color(gray));
 	}
 	else
-		engine->video->setClearColor(video::Color::BLACK);
+		video->setClearColor(video::Color::BLACK);
 	
-	levelProgram.use(engine->video->window);
+	levelProgram.use(video->window);
 	levelProgram.clear();
 	levelVpMatrixUniform.setMatrix4(view.getViewProjectionMatrix());
-	level.draw(time + 7.0f, levelVertexAttribute, levelColorUniform);
+	level.draw(currentTime + 7.0f, levelVertexAttribute, levelColorUniform);
 }
 
 } // game

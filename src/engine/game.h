@@ -15,10 +15,13 @@
 #include "video/program.h"
 #include "video/color.h"
 
+// state
+#include "state/state.h"
+
 namespace engine
 {
 
-class Game
+class Game : public Engine
 {
 	public:
 		Game();
@@ -52,9 +55,6 @@ class Game
 			delete game;
 			return 0;
 		}
-		
-	protected:
-		Engine* engine;
 		
 	private:
 		std::vector<std::string> m_args;
