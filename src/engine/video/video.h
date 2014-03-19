@@ -17,6 +17,7 @@ class Video
 		
 		void endFrame();
 		
+		void clear();
 		void setClearColor(const Color& color);
 
 	public:

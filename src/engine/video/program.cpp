@@ -53,11 +53,6 @@ void Program::use(Window* window)
 	glViewport(0, 0, windowSize.getX(), windowSize.getY());
 }
 
-void Program::clear()
-{
-	glClear(GL_COLOR_BUFFER_BIT);
-}
-
 Attribute Program::getAttribute(std::string attributeName)
 {
 	std::map<std::string, Attribute>::iterator it = m_attributes.find(attributeName);

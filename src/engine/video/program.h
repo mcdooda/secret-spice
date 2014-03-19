@@ -24,7 +24,6 @@ class Program
 		inline bool isValid() const { return m_valid; }
 		
 		void use(Window* window);
-		void clear();
 		
 		Attribute getAttribute(std::string attributeName);
 		Uniform getUniform(std::string uniformName);

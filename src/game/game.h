@@ -29,7 +29,8 @@ class Game : public engine::Game
 		
 		// attributes & uniforms
 		video::Program levelProgram;
-		video::Attribute levelVertexAttribute;
+		video::Attribute levelPositionAttribute;
+		video::Attribute levelUvAttribute;
 		video::Uniform levelVpMatrixUniform;
 		video::Uniform levelColorUniform;
 		

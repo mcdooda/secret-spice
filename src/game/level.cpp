@@ -14,10 +14,10 @@ Level::~Level()
 	
 }
 
-void Level::draw(float maxTime, video::Attribute vertexAttribute, const video::Uniform& colorUniform)
+void Level::draw(float maxTime, video::Attribute positionAttribute, video::Attribute uvAttribute, const video::Uniform& colorUniform)
 {
 	for (std::list<Platform>::iterator it = m_platforms.begin(); it != m_platforms.end() && it->getTime() < maxTime; it++)
-		it->draw(vertexAttribute, colorUniform);
+		it->draw(positionAttribute, uvAttribute, colorUniform);
 }
 
 void Level::getCurrentPlatforms(float time, Platform** previousPlatform, Platform** nextPlatform)

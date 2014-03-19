@@ -23,6 +23,8 @@ class Rectangle : public Polygon
 		void setPosition(const Vector2& position);
 		Vector2 getPosition();
 		
+		void draw(video::Attribute vertexAttribute, video::Attribute uvAttribute = 0);
+		
 };
 
 } // geometry

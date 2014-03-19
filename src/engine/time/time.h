@@ -14,7 +14,10 @@ class Time
 		
 		void beginFrame();
 		void endFrame();
+		
 		void setFrameRate(float rate);
+		float getFrameRate();
+		void setNoLimitFrameRate();
 
 		void sleep(float duration);
 		float getRealTime();

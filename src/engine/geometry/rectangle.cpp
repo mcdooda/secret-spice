@@ -1,4 +1,5 @@
 #include <cstring>
+#include <iostream>
 #include "rectangle.h"
 
 namespace engine
@@ -53,6 +54,30 @@ void Rectangle::setPosition(const Vector2& position)
 Vector2 Rectangle::getPosition()
 {
 	return m_vertices[0];
+}
+
+void Rectangle::draw(video::Attribute vertexAttribute, video::Attribute uvAttribute)
+{
+	if (!m_vertices.empty())
+	{
+		glEnableVertexAttribArray(vertexAttribute);
+		glVertexAttribPointer(vertexAttribute, 2, GL_FLOAT, GL_FALSE, 0, &m_vertices[0]);
+		if (uvAttribute != 0)
+		{
+			static const float uv[] = {
+				0.0f,0.0f,
+				0.0f,1.0f,
+				1.0f,1.0f,
+				1.0f,0.0f
+			};
+			glEnableVertexAttribArray(uvAttribute);
+			glVertexAttribPointer(uvAttribute, 2, GL_FLOAT, GL_FALSE, 0, uv);
+		}
+		glDrawArrays(GL_QUADS, 0, 4);
+		glDisableVertexAttribArray(vertexAttribute);
+		if (uvAttribute != 0)
+			glDisableVertexAttribArray(uvAttribute);
+	}
 }
 
 } // geometry

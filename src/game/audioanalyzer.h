@@ -3,6 +3,7 @@
 
 #include <string>
 #include <essentia/essentia.h>
+#include <essentia/algorithmfactory.h>
 
 #include "spectrum.h"
 
@@ -19,7 +20,12 @@ class AudioAnalyzer
 		static void close();
 		
 		void setInputFileName(std::string inputFileName) { m_inputFileName = inputFileName; }
-		void analyze();
+		void loadAlgorithms();
+		void analyzeStep();
+		void computeMaxAverage();
+		void freeAlgorithms();
+		
+		inline bool isLoaded() const { return m_loaded; }
 		
 		essentia::Real getDuration() const { return m_duration; }
 		const std::vector<essentia::Real>& getTicks() const { return m_ticks; }
@@ -29,11 +35,23 @@ class AudioAnalyzer
 		inline essentia::Real getMaxAverage() const { return m_maxAverage; }
 		
 	private:
-		void computeMaxAverage();
-		
-	private:
 		std::string m_inputFileName;
+		bool m_loaded;
 		
+		// algorithms
+		essentia::standard::Algorithm* m_frameCutter;
+		essentia::standard::Algorithm* m_windowing;
+		essentia::standard::Algorithm* m_spectrum;
+		essentia::standard::Algorithm* m_strongPeak;
+		
+		// algorithms' data
+		std::vector<essentia::Real>* m_audioBuffer;
+		std::vector<essentia::Real>* m_frame;
+		std::vector<essentia::Real>* m_windowedFrame;
+		std::vector<essentia::Real>* m_spectrumBuffer;
+		essentia::Real m_strongPeakValue;
+		
+		// generated data
 		essentia::Real m_duration;
 		std::vector<essentia::Real> m_ticks;
 		std::vector<Spectrum> m_spectrums;

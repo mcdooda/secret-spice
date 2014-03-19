@@ -1,4 +1,3 @@
-#include <essentia/algorithmfactory.h>
 #include <essentia/essentiamath.h>
 #include "audioanalyzer.h"
 
@@ -7,7 +6,8 @@ namespace game
 
 using namespace essentia;
 
-AudioAnalyzer::AudioAnalyzer()
+AudioAnalyzer::AudioAnalyzer() :
+	m_loaded(false)
 {
 	
 }
@@ -27,7 +27,7 @@ void AudioAnalyzer::close()
 	essentia::shutdown();
 }
 
-void AudioAnalyzer::analyze()
+void AudioAnalyzer::loadAlgorithms()
 {
 	essentia::standard::AlgorithmFactory& factory = essentia::standard::AlgorithmFactory::instance();
 	
@@ -38,10 +38,10 @@ void AudioAnalyzer::analyze()
 		"MonoLoader",
 		"filename", m_inputFileName
 	);
-	std::vector<essentia::Real> audioBuffer;
+	m_audioBuffer = new std::vector<essentia::Real>();
 	
 	// -->
-	monoLoader->output("audio").set(audioBuffer);
+	monoLoader->output("audio").set(*m_audioBuffer);
 	
 	monoLoader->compute();
 	delete monoLoader;
@@ -52,7 +52,7 @@ void AudioAnalyzer::analyze()
 	essentia::standard::Algorithm* duration = factory.create("Duration");
 	
 	// <--
-	duration->input("signal").set(audioBuffer);
+	duration->input("signal").set(*m_audioBuffer);
 	
 	// -->
 	duration->output("duration").set(m_duration);
@@ -69,7 +69,7 @@ void AudioAnalyzer::analyze()
 	);
 	
 	// <--
-	rhythmExtractor->input("signal").set(audioBuffer);
+	rhythmExtractor->input("signal").set(*m_audioBuffer);
 	
 	// -->
 	essentia::Real bpm;
@@ -84,83 +84,112 @@ void AudioAnalyzer::analyze()
 	
 	// compute
 	rhythmExtractor->compute();
-	
 	delete rhythmExtractor;
 	
 	/*
 	 * FrameCutter
 	 */
-	essentia::standard::Algorithm* frameCutter = factory.create(
-		"FrameCutter"
+	m_frameCutter = factory.create(
+		"FrameCutter",
+		"hopSize", 2048,
+		"frameSize", 4096
 	);
-	std::vector<Real> frame;
+	m_frame = new std::vector<essentia::Real>();
 	
 	// <--
-	frameCutter->input("signal").set(audioBuffer);
+	m_frameCutter->input("signal").set(*m_audioBuffer);
 	
 	// -->
-	frameCutter->output("frame").set(frame);
+	m_frameCutter->output("frame").set(*m_frame);
 	
 	/*
 	 * Windowing
 	 */
-	essentia::standard::Algorithm* windowing = factory.create(
+	m_windowing = factory.create(
 		"Windowing",
 		"type", "blackmanharris62"
 	);
-	std::vector<Real> windowedFrame;
+	m_windowedFrame = new std::vector<essentia::Real>();
 	
 	// <--
-	windowing->input("frame").set(frame);
+	m_windowing->input("frame").set(*m_frame);
 	
 	// -->
-	windowing->output("frame").set(windowedFrame);
+	m_windowing->output("frame").set(*m_windowedFrame);
 	
 	/*
 	 * Spectrum
 	 */
-	essentia::standard::Algorithm* spectrum = factory.create("Spectrum");
-	std::vector<essentia::Real> spectrumBuffer;
+	m_spectrum = factory.create(
+		"Spectrum",
+		"size", 4096
+	);
+	m_spectrumBuffer = new std::vector<essentia::Real>();
 	
 	// <--
-	spectrum->input("frame").set(windowedFrame);
+	m_spectrum->input("frame").set(*m_windowedFrame);
 	
 	// -->
-	spectrum->output("spectrum").set(spectrumBuffer);
+	m_spectrum->output("spectrum").set(*m_spectrumBuffer);
 	
 	/*
 	 * StrongPeak
 	 */
-	essentia::standard::Algorithm* strongPeak = factory.create("StrongPeak");
-	essentia::Real strongPeakValue;
+	m_strongPeak = factory.create(
+		"StrongPeak"
+	);
 	
 	// <--
-	strongPeak->input("spectrum").set(spectrumBuffer);
+	m_strongPeak->input("spectrum").set(*m_spectrumBuffer);
 	
 	// -->
-	strongPeak->output("strongPeak").set(strongPeakValue);
-	
-	while (true) {
-		frameCutter->compute();
+	m_strongPeak->output("strongPeak").set(m_strongPeakValue);
+}
+
+void AudioAnalyzer::analyzeStep()
+{
+	for (int i = 0; i < 20; i++)
+	{
+		m_frameCutter->compute();
 		
-		if (!frame.size())
+		if (!m_frame->size())
+		{
+			m_loaded = true;
 			break;
+		}
 			
-		if (essentia::isSilent(frame))
+		if (essentia::isSilent(*m_frame))
 			continue;
 		
-		windowing->compute();
-		spectrum->compute();
-		strongPeak->compute();
-		
-		m_spectrums.push_back(Spectrum(spectrumBuffer, strongPeakValue));
+		m_windowing->compute();
+		m_spectrum->compute();
+		m_strongPeak->compute();
+		m_spectrums.push_back(Spectrum(*m_spectrumBuffer, m_strongPeakValue));
 	}
+}
+
+void AudioAnalyzer::computeMaxAverage()
+{
+	m_maxAverage = 0;
+	for (std::vector<Spectrum>::iterator it = m_spectrums.begin(); it != m_spectrums.end(); it++)
+		m_maxAverage += it->getMax().getY();
+		
+	m_maxAverage /= m_spectrums.size();
+}
+
+void AudioAnalyzer::freeAlgorithms()
+{
+	// algorithms' data
+	delete m_audioBuffer;
+	delete m_frame;
+	delete m_windowedFrame;
+	delete m_spectrumBuffer;
 	
-	delete frameCutter;
-	delete windowing;
-	delete spectrum;
-	
-	computeMaxAverage();
+	// algorithms
+	delete m_frameCutter;
+	delete m_windowing;
+	delete m_spectrum;
+	delete m_strongPeak;
 }
 
 void AudioAnalyzer::getSpectrum(float time, Spectrum** spectrum) const
@@ -172,15 +201,6 @@ void AudioAnalyzer::getSpectrum(float time, Spectrum** spectrum) const
 	
 	else
 		*spectrum = NULL;
-}
-
-void AudioAnalyzer::computeMaxAverage()
-{
-	m_maxAverage = 0;
-	for (std::vector<Spectrum>::iterator it = m_spectrums.begin(); it != m_spectrums.end(); it++)
-		m_maxAverage += it->getMax().getY();
-		
-	m_maxAverage /= m_spectrums.size();
 }
 
 } // game

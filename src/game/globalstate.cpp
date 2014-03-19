@@ -12,7 +12,8 @@ void GlobalState::enter(state::Agent* agent)
 	
 	game->levelProgram.load("rsrc/shader/renderlevel.frag", "rsrc/shader/renderlevel.vert");
 	
-	game->levelVertexAttribute = game->levelProgram.getAttribute("position");
+	game->levelPositionAttribute = game->levelProgram.getAttribute("position");
+	game->levelUvAttribute = game->levelProgram.getAttribute("uv");
 	game->levelVpMatrixUniform = game->levelProgram.getUniform("vpMatrix");
 	game->levelColorUniform = game->levelProgram.getUniform("color");
 	

@@ -1,4 +1,3 @@
-#include "game.h"
 #include "gamestate.h"
 
 namespace game
@@ -19,11 +18,13 @@ void GameState::execute(state::Agent* agent)
 {
 	game::Game* game = (game::Game*) agent;
 	
+	update(game);
+	draw(game);
+}
+
+void GameState::update(game::Game* game)
+{
 	float currentTime = game->time->getTime() - game->beginTime;
-	
-	/*
-	 * UPDATE
-	 */
 	
 	if (!game->ticks.empty() && currentTime > *game->ticks.begin())
 	{
@@ -64,11 +65,11 @@ void GameState::execute(state::Agent* agent)
 		
 		game->audioAnalyzer.getSpectrum(currentTime, &game->currentSpectrum);
 	}
-	
-	/*
-	 * DRAW
-	 */
-	
+}
+
+void GameState::draw(game::Game* game)
+{
+	float currentTime = game->time->getTime() - game->beginTime;
 	float flashDuration = 0.1f;
 	
 	if (currentTime - game->lastTick < flashDuration)
@@ -82,10 +83,10 @@ void GameState::execute(state::Agent* agent)
 	else
 		game->video->setClearColor(video::Color::BLACK);
 	
+	game->video->clear();
 	game->levelProgram.use(game->video->window);
-	game->levelProgram.clear();
 	game->levelVpMatrixUniform.setMatrix4(game->view.getViewProjectionMatrix());
-	game->level.draw(currentTime + 7.0f, game->levelVertexAttribute, game->levelColorUniform);
+	game->level.draw(currentTime + 7.0f, game->levelPositionAttribute, game->levelUvAttribute, game->levelColorUniform);
 }
 
 void GameState::exit(state::Agent* agent)

@@ -9,8 +9,8 @@ namespace time
 Time::Time()
 {
 	m_timePaused = false;
-	m_pauseElapsedTime = 0;
-	m_frameTime = 0;
+	m_pauseElapsedTime = 0.0f;
+	m_frameTime = 0.0f;
 	setFrameRate(60.0f);
 }
 
@@ -28,7 +28,7 @@ void Time::endFrame()
 {
 	float endFrameTime = getRealTime();
 	m_frameTime = endFrameTime - m_beginFrameTime;
-	if (m_frameTime < m_frameDuration)
+	if (m_frameDuration > 0.0f && m_frameTime < m_frameDuration)
 	{
 		sleep(m_frameDuration - m_frameTime);
 		m_frameTime = m_frameDuration;
@@ -40,9 +40,19 @@ void Time::setFrameRate(float rate)
 	m_frameDuration = 1.f / rate;
 }
 
+float Time::getFrameRate()
+{
+	return 1.f / m_frameDuration;
+}
+
+void Time::setNoLimitFrameRate()
+{
+	m_frameDuration = 0.0f;
+}
+
 void Time::sleep(float duration)
 {
-	SDL_Delay(duration * 1000);
+	SDL_Delay(duration * 1000.0f);
 }
 
 float Time::getRealTime()
@@ -82,7 +92,7 @@ float Time::getTime()
 
 float Time::getFrameTime()
 {
-	return m_timePaused ? 0 : m_frameTime;
+	return m_timePaused ? 0.0f : m_frameTime;
 }
 
 } // time

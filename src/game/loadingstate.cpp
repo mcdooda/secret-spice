@@ -8,19 +8,45 @@ namespace game
 void LoadingState::enter(state::Agent* agent)
 {
 	game::Game* game = (game::Game*) agent;
-	
-	/*
-	 * LOADING MUSIC
-	 */
+	m_frameRate = game->time->getFrameRate();
+	game->time->setNoLimitFrameRate();
 	
 	game->audioAnalyzer.setInputFileName(game->argGetString(1));
-	game->audioAnalyzer.analyze();
-	copy(game->audioAnalyzer.getTicks().begin(), game->audioAnalyzer.getTicks().end(), std::back_inserter(game->ticks));
+	game->audioAnalyzer.loadAlgorithms();
+}
+
+void LoadingState::execute(state::Agent* agent)
+{
+	game::Game* game = (game::Game*) agent;
+	draw(game);
+	update(game);
+}
+
+void LoadingState::update(game::Game* game)
+{
+	game->audioAnalyzer.analyzeStep();
 	
-	/*
-	 * ANALYZING MUSIC
-	 */
-	 
+	if (game->audioAnalyzer.isLoaded())
+		game->getStateMachine()->setState(new GameState());
+}
+
+void LoadingState::draw(game::Game* game)
+{
+	game->levelProgram.use(game->video->window);
+	game->video->setClearColor(video::Color::BLACK);
+	game->video->clear();
+	game->levelVpMatrixUniform.setMatrix4(game->view.getViewProjectionMatrix());
+	geometry::Rectangle r(geometry::Vector2(-1.0f, -1.0f), geometry::Vector2(2.0f, 2.0f));
+	geometry::Matrix4 matrix4;
+	matrix4.scale(20.0f + fmodf(game->time->getTime() * 4.0f, 10.0f));
+	matrix4.rotateZ(game->time->getTime());
+	r.transform(matrix4);
+	game->levelColorUniform.setColor(video::Color(0.5f - fmodf(game->time->getTime() * 0.2f, 0.5f)));
+	r.draw(game->levelPositionAttribute);
+}
+
+void LoadingState::loadLevel(game::Game* game)
+{
 	video::View levelView;
 	geometry::Vector2 zero;
 	video::Color red(1.0f, 0.0f, 0.0f, 1.0f);
@@ -35,9 +61,13 @@ void LoadingState::enter(state::Agent* agent)
 		geometry::Vector2 center = levelView.getViewMatrix() * zero;
 		
 		game->audioAnalyzer.getSpectrum(tick, &game->currentSpectrum);
-		float angle = -(game->currentSpectrum->getMax().getY() - game->audioAnalyzer.getMaxAverage() / 2);
+		
+		const geometry::Vector2& max = game->currentSpectrum->getMax();
+		float maxAverage = game->audioAnalyzer.getMaxAverage();
+		
+		float angle = -(max.getY() - maxAverage / 2);
 		bool strongPeak = false;
-		if (game->currentSpectrum->getMax().getY() > game->audioAnalyzer.getMaxAverage() * 2.8f)
+		if (max.getY() > maxAverage * 1.6f && max.getX() < 0.5f)
 		{
 			strongPeak = true;
 			angleY += M_PI;
@@ -51,8 +81,11 @@ void LoadingState::enter(state::Agent* agent)
 		geometry::Rectangle r = rectangle;
 		r.transform(matrix4);
 		
-		if (game->currentSpectrum->getMax().getY() > game->audioAnalyzer.getMaxAverage() * 0.5f)
-			game->level.addPlatform(Platform(r, center, angle, angleY, tick, strongPeak ? purple : red));
+		bool addPlatform = strongPeak || max.getY() > maxAverage * 0.4f;
+		//bool addPlatform = true;
+		
+		if (addPlatform)
+			game->level.addPlatform(Platform(r, center, angle, angleY, tick, strongPeak ? purple : red, strongPeak));
 			
 		else
 		{
@@ -73,18 +106,17 @@ void LoadingState::enter(state::Agent* agent)
 	}
 }
 
-void LoadingState::execute(state::Agent* agent)
-{
-	game::Game* game = (game::Game*) agent;
-	
-	game->getStateMachine()->setState(new GameState());
-}
-
 void LoadingState::exit(state::Agent* agent)
 {
-	//game::Game* game = (game::Game*) agent;
+	game::Game* game = (game::Game*) agent;
+	game->time->setFrameRate(m_frameRate);
 	
+	game->audioAnalyzer.freeAlgorithms();
+	game->audioAnalyzer.computeMaxAverage();
 	
+	copy(game->audioAnalyzer.getTicks().begin(), game->audioAnalyzer.getTicks().end(), std::back_inserter(game->ticks));
+	
+	loadLevel(game);
 }
 
 } // game
