@@ -17,8 +17,7 @@ void GlobalState::enter(state::Agent* agent)
 	game->levelVpMatrixUniform = game->levelProgram.getUniform("vpMatrix");
 	game->levelColorUniform = game->levelProgram.getUniform("color");
 	
-	game->view = video::View();
-	game->view.updateProjection(game->video->window->getSize());
+	resetViews(game);
 	
 	AudioAnalyzer::open();
 }
@@ -28,7 +27,7 @@ void GlobalState::execute(state::Agent* agent)
 	game::Game* game = (game::Game*) agent;
 	
 	if (game->input->window->isResized())
-		game->view.updateProjection(game->video->window->getSize());
+		resetViews(game);
 		
 	if (game->input->keyboard->isJustPressed(K(ESCAPE)))
 		game->stop();
@@ -39,6 +38,18 @@ void GlobalState::exit(state::Agent* agent)
 	//game::Game* game = (game::Game*) agent;
 	
 	AudioAnalyzer::close();
+}
+
+void GlobalState::resetViews(game::Game* game)
+{
+	const geometry::Vector2 windowSize = game->video->window->getSize();
+	
+	game->view.reset();
+	game->view.updateProjection(windowSize);
+	
+	game->interfaceView.reset();
+	game->interfaceView.move(windowSize / -2.0f);
+	game->interfaceView.updateProjection(windowSize);
 }
 
 } // game

@@ -3,9 +3,10 @@
 namespace game
 {
 
-Spectrum::Spectrum(const std::vector<essentia::Real>& spectrum, essentia::Real strongPeak) :
+Spectrum::Spectrum(const std::vector<essentia::Real>& spectrum, essentia::Real strongPeak, essentia::Real loudness) :
 	m_spectrum(spectrum),
-	m_strongPeak(strongPeak)
+	m_strongPeak(strongPeak),
+	m_loudness(loudness)
 {
 	computeMax();
 }

@@ -52,22 +52,66 @@ void LoadingState::loadLevel(game::Game* game)
 	video::Color red(1.0f, 0.0f, 0.0f, 1.0f);
 	video::Color purple(1.0f, 0.0f, 1.0f, 1.0f);
 	geometry::Rectangle rectangle(geometry::Vector2(-1.0f, -1.0f), geometry::Vector2(2.0f, 2.0f));
-	int i = 0;
+	essentia::Real averageLoudness = game->audioAnalyzer.getAverageLoudness();
 	float angleY = 0;
+	int i = 0;
+	int length = game->ticks.size();
 	for (std::list<essentia::Real>::iterator it = game->ticks.begin(); it != game->ticks.end(); it++)
 	{
 		essentia::Real tick = *it;
 		
+		essentia::Real prevPrevTick;
+		essentia::Real prevTick;
+		if (i > 0)
+		{
+			it--;
+			prevTick = *it;
+			if (i > 1)
+			{
+				it--;
+				prevPrevTick = *it;
+				it++;
+			}
+			else
+				prevPrevTick = prevTick;
+			it++;
+		}
+		else
+		{
+			prevTick = tick;
+			prevPrevTick = prevTick;
+		}
+			
+		essentia::Real nextTick;
+		if (i < length - 1)
+		{
+			it++;
+			nextTick = *it;
+			it--;
+		}
+		else
+			nextTick = tick;
+		
 		geometry::Vector2 center = levelView.getViewMatrix() * zero;
 		
-		game->audioAnalyzer.getSpectrum(tick, &game->currentSpectrum);
+		Spectrum* prevPrevSpectrum;
+		Spectrum* prevSpectrum;
+		Spectrum* currentSpectrum;
+		Spectrum* nextSpectrum;
 		
-		const geometry::Vector2& max = game->currentSpectrum->getMax();
-		float maxAverage = game->audioAnalyzer.getMaxAverage();
+		game->audioAnalyzer.getSpectrum(prevPrevTick, &prevPrevSpectrum);
+		game->audioAnalyzer.getSpectrum(prevTick, &prevSpectrum);
+		game->audioAnalyzer.getSpectrum(tick, &currentSpectrum);
+		game->audioAnalyzer.getSpectrum(nextTick, &nextSpectrum);
 		
-		float angle = -(max.getY() - maxAverage / 2);
+		essentia::Real prevPrevLoudness = prevPrevSpectrum->getLoudness();
+		essentia::Real prevLoudness = prevSpectrum->getLoudness();
+		essentia::Real loudness = currentSpectrum->getLoudness();
+		essentia::Real nextLoudness = nextSpectrum->getLoudness();
+		
+		float angle = -(loudness - averageLoudness / 2.0f) / averageLoudness / 2.0f;
 		bool strongPeak = false;
-		if (max.getY() > maxAverage * 1.6f && max.getX() < 0.5f)
+		if (prevPrevLoudness < loudness && prevLoudness < loudness && nextLoudness < loudness)
 		{
 			strongPeak = true;
 			angleY += M_PI;
@@ -81,8 +125,7 @@ void LoadingState::loadLevel(game::Game* game)
 		geometry::Rectangle r = rectangle;
 		r.transform(matrix4);
 		
-		bool addPlatform = strongPeak || max.getY() > maxAverage * 0.4f;
-		//bool addPlatform = true;
+		bool addPlatform = loudness > averageLoudness * 0.2f;
 		
 		if (addPlatform)
 			game->level.addPlatform(Platform(r, center, angle, angleY, tick, strongPeak ? purple : red, strongPeak));
@@ -112,7 +155,7 @@ void LoadingState::exit(state::Agent* agent)
 	game->time->setFrameRate(m_frameRate);
 	
 	game->audioAnalyzer.freeAlgorithms();
-	game->audioAnalyzer.computeMaxAverage();
+	game->audioAnalyzer.computeAverageLoudness();
 	
 	copy(game->audioAnalyzer.getTicks().begin(), game->audioAnalyzer.getTicks().end(), std::back_inserter(game->ticks));
 	

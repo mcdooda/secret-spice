@@ -85,8 +85,17 @@ void GameState::draw(game::Game* game)
 	
 	game->video->clear();
 	game->levelProgram.use(game->video->window);
+	
 	game->levelVpMatrixUniform.setMatrix4(game->view.getViewProjectionMatrix());
 	game->level.draw(currentTime + 7.0f, game->levelPositionAttribute, game->levelUvAttribute, game->levelColorUniform);
+	
+	game->levelColorUniform.setColor(video::Color(1.0f, 0.0f, 0.0f, 1.0f));
+	const geometry::Vector2 windowSize = game->video->window->getSize();
+	float cursorPosition = currentTime / game->audioAnalyzer.getDuration();
+	cursorPosition = cursorPosition > 1.0f ? 1.0f : cursorPosition;
+	geometry::Rectangle r(geometry::Vector2(2.0f, 2.0f), geometry::Vector2((windowSize.getX() - 4.0f) * cursorPosition, 2.0f));
+	game->levelVpMatrixUniform.setMatrix4(game->interfaceView.getViewProjectionMatrix());
+	r.draw(game->levelPositionAttribute, game->levelUvAttribute);
 }
 
 void GameState::exit(state::Agent* agent)

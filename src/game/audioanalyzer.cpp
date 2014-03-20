@@ -34,62 +34,62 @@ void AudioAnalyzer::loadAlgorithms()
 	/*
 	 * MonoLoader
 	 */
-	essentia::standard::Algorithm* monoLoader = factory.create(
+	essentia::standard::Algorithm* monoLoaderAlgorithm = factory.create(
 		"MonoLoader",
 		"filename", m_inputFileName
 	);
 	m_audioBuffer = new std::vector<essentia::Real>();
 	
 	// -->
-	monoLoader->output("audio").set(*m_audioBuffer);
+	monoLoaderAlgorithm->output("audio").set(*m_audioBuffer);
 	
-	monoLoader->compute();
-	delete monoLoader;
+	monoLoaderAlgorithm->compute();
+	delete monoLoaderAlgorithm;
 	
 	/*
 	 * Duration
 	 */
-	essentia::standard::Algorithm* duration = factory.create("Duration");
+	essentia::standard::Algorithm* durationAlgorithm = factory.create("Duration");
 	
 	// <--
-	duration->input("signal").set(*m_audioBuffer);
+	durationAlgorithm->input("signal").set(*m_audioBuffer);
 	
 	// -->
-	duration->output("duration").set(m_duration);
+	durationAlgorithm->output("duration").set(m_duration);
 	
-	duration->compute();
-	delete duration;
+	durationAlgorithm->compute();
+	delete durationAlgorithm;
 	
 	/*
 	 * RhythmExtractor2013
 	 */
-	essentia::standard::Algorithm* rhythmExtractor = factory.create(
+	essentia::standard::Algorithm* rhythmExtractorAlgorithm = factory.create(
 		"RhythmExtractor2013",
 		"method", "multifeature"
 	);
 	
 	// <--
-	rhythmExtractor->input("signal").set(*m_audioBuffer);
+	rhythmExtractorAlgorithm->input("signal").set(*m_audioBuffer);
 	
 	// -->
 	essentia::Real bpm;
 	essentia::Real confidence;
 	std::vector<essentia::Real> estimates;
 	std::vector<essentia::Real> bpmIntervals;
-	rhythmExtractor->output("bpm").set(bpm);
-	rhythmExtractor->output("ticks").set(m_ticks);
-	rhythmExtractor->output("confidence").set(confidence);
-	rhythmExtractor->output("estimates").set(estimates);
-	rhythmExtractor->output("bpmIntervals").set(bpmIntervals);
+	rhythmExtractorAlgorithm->output("bpm").set(bpm);
+	rhythmExtractorAlgorithm->output("ticks").set(m_ticks);
+	rhythmExtractorAlgorithm->output("confidence").set(confidence);
+	rhythmExtractorAlgorithm->output("estimates").set(estimates);
+	rhythmExtractorAlgorithm->output("bpmIntervals").set(bpmIntervals);
 	
 	// compute
-	rhythmExtractor->compute();
-	delete rhythmExtractor;
+	rhythmExtractorAlgorithm->compute();
+	delete rhythmExtractorAlgorithm;
 	
 	/*
 	 * FrameCutter
 	 */
-	m_frameCutter = factory.create(
+	m_frameCutterAlgorithm = factory.create(
 		"FrameCutter",
 		"hopSize", 2048,
 		"frameSize", 4096
@@ -97,60 +97,73 @@ void AudioAnalyzer::loadAlgorithms()
 	m_frame = new std::vector<essentia::Real>();
 	
 	// <--
-	m_frameCutter->input("signal").set(*m_audioBuffer);
+	m_frameCutterAlgorithm->input("signal").set(*m_audioBuffer);
 	
 	// -->
-	m_frameCutter->output("frame").set(*m_frame);
+	m_frameCutterAlgorithm->output("frame").set(*m_frame);
 	
 	/*
 	 * Windowing
 	 */
-	m_windowing = factory.create(
+	m_windowingAlgorithm = factory.create(
 		"Windowing",
 		"type", "blackmanharris62"
 	);
 	m_windowedFrame = new std::vector<essentia::Real>();
 	
 	// <--
-	m_windowing->input("frame").set(*m_frame);
+	m_windowingAlgorithm->input("frame").set(*m_frame);
 	
 	// -->
-	m_windowing->output("frame").set(*m_windowedFrame);
+	m_windowingAlgorithm->output("frame").set(*m_windowedFrame);
 	
 	/*
 	 * Spectrum
 	 */
-	m_spectrum = factory.create(
+	m_spectrumAlgorithm = factory.create(
 		"Spectrum",
 		"size", 4096
 	);
 	m_spectrumBuffer = new std::vector<essentia::Real>();
 	
 	// <--
-	m_spectrum->input("frame").set(*m_windowedFrame);
+	m_spectrumAlgorithm->input("frame").set(*m_windowedFrame);
 	
 	// -->
-	m_spectrum->output("spectrum").set(*m_spectrumBuffer);
+	m_spectrumAlgorithm->output("spectrum").set(*m_spectrumBuffer);
+	
+	/*
+	 * Loudness
+	 */
+	m_loudnessAlgorithm = factory.create(
+		"Loudness"
+	);
+	
+	// <--
+	m_loudnessAlgorithm->input("signal").set(*m_windowedFrame);
+	
+	// -->
+	m_loudnessAlgorithm->output("loudness").set(m_loudness);
 	
 	/*
 	 * StrongPeak
 	 */
-	m_strongPeak = factory.create(
+	m_strongPeakAlgorithm = factory.create(
 		"StrongPeak"
 	);
 	
 	// <--
-	m_strongPeak->input("spectrum").set(*m_spectrumBuffer);
+	m_strongPeakAlgorithm->input("spectrum").set(*m_spectrumBuffer);
 	
 	// -->
-	m_strongPeak->output("strongPeak").set(m_strongPeakValue);
+	m_strongPeakAlgorithm->output("strongPeak").set(m_strongPeakValue);
 }
 
 void AudioAnalyzer::analyzeStep()
 {
 	for (int i = 0; i < 20; i++)
 	{
-		m_frameCutter->compute();
+		m_frameCutterAlgorithm->compute();
 		
 		if (!m_frame->size())
 		{
@@ -161,20 +174,21 @@ void AudioAnalyzer::analyzeStep()
 		if (essentia::isSilent(*m_frame))
 			continue;
 		
-		m_windowing->compute();
-		m_spectrum->compute();
-		m_strongPeak->compute();
-		m_spectrums.push_back(Spectrum(*m_spectrumBuffer, m_strongPeakValue));
+		m_windowingAlgorithm->compute();
+		m_spectrumAlgorithm->compute();
+		m_loudnessAlgorithm->compute();
+		m_strongPeakAlgorithm->compute();
+		m_spectrums.push_back(Spectrum(*m_spectrumBuffer, m_strongPeakValue, m_loudness));
 	}
 }
 
-void AudioAnalyzer::computeMaxAverage()
+void AudioAnalyzer::computeAverageLoudness()
 {
-	m_maxAverage = 0;
+	m_averageLoudness = 0.0f;
 	for (std::vector<Spectrum>::iterator it = m_spectrums.begin(); it != m_spectrums.end(); it++)
-		m_maxAverage += it->getMax().getY();
+		m_averageLoudness += it->getLoudness();
 		
-	m_maxAverage /= m_spectrums.size();
+	m_averageLoudness /= m_spectrums.size();
 }
 
 void AudioAnalyzer::freeAlgorithms()
@@ -186,10 +200,10 @@ void AudioAnalyzer::freeAlgorithms()
 	delete m_spectrumBuffer;
 	
 	// algorithms
-	delete m_frameCutter;
-	delete m_windowing;
-	delete m_spectrum;
-	delete m_strongPeak;
+	delete m_frameCutterAlgorithm;
+	delete m_windowingAlgorithm;
+	delete m_spectrumAlgorithm;
+	delete m_strongPeakAlgorithm;
 }
 
 void AudioAnalyzer::getSpectrum(float time, Spectrum** spectrum) const

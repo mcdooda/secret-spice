@@ -12,6 +12,8 @@ class GlobalState : public state::State
 		virtual void enter(state::Agent* agent);
 		virtual void execute(state::Agent* agent);
 		virtual void exit(state::Agent* agent);
+		
+		void resetViews(game::Game* game);
 };
 
 }

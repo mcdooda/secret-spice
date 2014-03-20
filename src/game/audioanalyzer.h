@@ -22,7 +22,7 @@ class AudioAnalyzer
 		void setInputFileName(std::string inputFileName) { m_inputFileName = inputFileName; }
 		void loadAlgorithms();
 		void analyzeStep();
-		void computeMaxAverage();
+		void computeAverageLoudness();
 		void freeAlgorithms();
 		
 		inline bool isLoaded() const { return m_loaded; }
@@ -32,30 +32,32 @@ class AudioAnalyzer
 		
 		void getSpectrum(float time, Spectrum** spectrum) const;
 		
-		inline essentia::Real getMaxAverage() const { return m_maxAverage; }
+		inline essentia::Real getAverageLoudness() const { return m_averageLoudness; }
 		
 	private:
 		std::string m_inputFileName;
 		bool m_loaded;
 		
 		// algorithms
-		essentia::standard::Algorithm* m_frameCutter;
-		essentia::standard::Algorithm* m_windowing;
-		essentia::standard::Algorithm* m_spectrum;
-		essentia::standard::Algorithm* m_strongPeak;
+		essentia::standard::Algorithm* m_frameCutterAlgorithm;
+		essentia::standard::Algorithm* m_windowingAlgorithm;
+		essentia::standard::Algorithm* m_spectrumAlgorithm;
+		essentia::standard::Algorithm* m_loudnessAlgorithm;
+		essentia::standard::Algorithm* m_strongPeakAlgorithm;
 		
 		// algorithms' data
 		std::vector<essentia::Real>* m_audioBuffer;
 		std::vector<essentia::Real>* m_frame;
 		std::vector<essentia::Real>* m_windowedFrame;
 		std::vector<essentia::Real>* m_spectrumBuffer;
+		essentia::Real m_loudness;
 		essentia::Real m_strongPeakValue;
 		
 		// generated data
 		essentia::Real m_duration;
 		std::vector<essentia::Real> m_ticks;
 		std::vector<Spectrum> m_spectrums;
-		essentia::Real m_maxAverage;
+		essentia::Real m_averageLoudness;
 };
 
 } // game

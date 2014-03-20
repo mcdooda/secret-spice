@@ -26,6 +26,7 @@ class Game : public engine::Game
 		
 		// video program
 		video::View view;
+		video::View interfaceView;
 		
 		// attributes & uniforms
 		video::Program levelProgram;
