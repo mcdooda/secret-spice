@@ -26,13 +26,13 @@ void LoadingState::update(game::Game* game)
 {
 	game->audioAnalyzer.analyzeStep();
 	
-	if (game->audioAnalyzer.isLoaded())
-		game->getStateMachine()->setState(new GameState());
+	/*if (game->audioAnalyzer.isLoaded())
+		game->getStateMachine()->setState(new GameState());*/
 }
 
 void LoadingState::draw(game::Game* game)
 {
-	game->levelProgram.use(game->video->window);
+	game->levelPass.use();
 	game->video->setClearColor(video::Color::BLACK);
 	game->video->clear();
 	game->levelVpMatrixUniform.setMatrix4(game->view.getViewProjectionMatrix());
@@ -43,6 +43,12 @@ void LoadingState::draw(game::Game* game)
 	r.transform(matrix4);
 	game->levelColorUniform.setColor(video::Color(0.5f - fmodf(game->time->getTime() * 0.2f, 0.5f)));
 	r.draw(game->levelPositionAttribute);
+	
+	game->renderProgram.use(game->video->window);
+	game->video->setClearColor(video::Color::WHITE);
+	game->video->clear();
+	geometry::Rectangle r2(geometry::Vector2(-0.9f, -0.9f), geometry::Vector2(1.8f, 1.8f));
+	r2.draw(game->renderPositionAttribute, game->renderUvAttribute);
 }
 
 void LoadingState::loadLevel(game::Game* game)
@@ -109,7 +115,7 @@ void LoadingState::loadLevel(game::Game* game)
 		essentia::Real loudness = currentSpectrum->getLoudness();
 		essentia::Real nextLoudness = nextSpectrum->getLoudness();
 		
-		float angle = -(loudness - averageLoudness / 2.0f) / averageLoudness / 2.0f;
+		float angle = -(loudness - averageLoudness / 2.0f) / (averageLoudness * 8.0f);
 		bool strongPeak = false;
 		if (prevPrevLoudness < loudness && prevLoudness < loudness && nextLoudness < loudness)
 		{

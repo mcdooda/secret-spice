@@ -13,13 +13,19 @@ class Texture
 {
 	public:
 		Texture();
-
+		Texture(GLuint textureId, const geometry::Vector2& size, const std::string& name);
+		~Texture();
+		
 		inline GLuint getTextureId() const { return m_textureId; }
 		inline const geometry::Vector2& getSize() const { return m_size; }
-
+		inline const std::string& getName() const { return m_name; }
+		
+		friend class Pass;
+		
 	protected:
 		GLuint m_textureId;
 		geometry::Vector2 m_size;
+		std::string m_name;
 };
 
 } // video

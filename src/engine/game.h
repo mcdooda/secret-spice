@@ -12,7 +12,7 @@
 #include "geometry/rectangle.h"
 
 // video
-#include "video/program.h"
+#include "video/pass.h"
 #include "video/color.h"
 
 // state

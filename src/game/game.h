@@ -24,16 +24,22 @@ class Game : public engine::Game
 		std::list<essentia::Real> ticks;
 		Spectrum* currentSpectrum;
 		
-		// video program
+		// views
 		video::View view;
 		video::View interfaceView;
 		
+		// passes
+		video::Pass levelPass;
+		video::Program renderProgram;
+		
 		// attributes & uniforms
-		video::Program levelProgram;
 		video::Attribute levelPositionAttribute;
 		video::Attribute levelUvAttribute;
 		video::Uniform levelVpMatrixUniform;
 		video::Uniform levelColorUniform;
+		
+		video::Attribute renderPositionAttribute;
+		video::Attribute renderUvAttribute;
 		
 		// game objects
 		Level level;

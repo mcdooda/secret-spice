@@ -42,15 +42,21 @@ void Program::load(std::string fragmentShader, std::string vertexShader)
 
 void Program::use(Window* window)
 {
-	if (!m_valid)
-	{
-		std::cerr << "Fatal error: using invalid shader program" << std::endl;
-		exit(1);
-	}
-	
+	checkValid();
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glUseProgram(m_programId);
 	const geometry::Vector2& windowSize = window->getSize();
 	glViewport(0, 0, windowSize.getX(), windowSize.getY());
+	
+	int i = 0;
+	for (std::vector<Texture>::iterator it = m_inputTextures.begin(); it != m_inputTextures.end(); it++)
+	{
+		glActiveTexture(GL_TEXTURE0 + i);
+		glBindTexture(GL_TEXTURE_2D, it->getTextureId());
+		const Uniform& textureUniform = getUniform(it->getName());
+		textureUniform.setInt(i);
+		i++;
+	}
 }
 
 Attribute Program::getAttribute(std::string attributeName)
@@ -73,6 +79,20 @@ Uniform Program::getUniform(std::string uniformName)
 		
 	else
 		return Uniform(-1);
+}
+
+void Program::addInputTexture(const Texture& inputTexture)
+{
+	m_inputTextures.push_back(inputTexture);
+}
+
+void Program::checkValid()
+{
+	if (!m_valid)
+	{
+		std::cerr << "Fatal error: using invalid shader program" << std::endl;
+		exit(1);
+	}
 }
 
 GLuint Program::compileProgram(GLuint fragmentShaderId, GLuint vertexShaderId)

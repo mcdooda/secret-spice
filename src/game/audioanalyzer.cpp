@@ -161,7 +161,7 @@ void AudioAnalyzer::loadAlgorithms()
 
 void AudioAnalyzer::analyzeStep()
 {
-	for (int i = 0; i < 20; i++)
+	for (int i = 0; !m_loaded && i < 20; i++)
 	{
 		m_frameCutterAlgorithm->compute();
 		

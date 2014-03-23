@@ -84,7 +84,7 @@ void GameState::draw(game::Game* game)
 		game->video->setClearColor(video::Color::BLACK);
 	
 	game->video->clear();
-	game->levelProgram.use(game->video->window);
+	game->renderProgram.use(game->video->window);
 	
 	game->levelVpMatrixUniform.setMatrix4(game->view.getViewProjectionMatrix());
 	game->level.draw(currentTime + 7.0f, game->levelPositionAttribute, game->levelUvAttribute, game->levelColorUniform);

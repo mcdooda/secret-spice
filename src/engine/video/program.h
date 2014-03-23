@@ -7,6 +7,7 @@
 #include "attribute.h"
 #include "uniform.h"
 #include "window.h"
+#include "texture.h"
 
 namespace engine
 {
@@ -17,7 +18,7 @@ class Program
 {
 	public:
 		Program();
-		~Program();
+		virtual ~Program();
 		
 		void load(std::string fragmentShader, std::string vertexShader);
 		
@@ -28,7 +29,11 @@ class Program
 		Attribute getAttribute(std::string attributeName);
 		Uniform getUniform(std::string uniformName);
 		
-	private:
+		void addInputTexture(const Texture& inputTexture);
+		
+	protected:
+		void checkValid();
+		
 		GLuint compileProgram(GLuint fragmentShaderId, GLuint vertexShaderId);
 		GLuint compileShader(std::string shader, GLuint shaderType);
 		
@@ -46,6 +51,8 @@ class Program
 		
 		std::map<std::string, Attribute> m_attributes;
 		std::map<std::string, Uniform> m_uniforms;
+		
+		std::vector<Texture> m_inputTextures;
 };
 
 } // video

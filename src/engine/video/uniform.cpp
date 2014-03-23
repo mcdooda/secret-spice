@@ -23,6 +23,16 @@ Uniform::~Uniform()
 	
 }
 
+void Uniform::setInt(int i) const
+{
+	glUniform1i(m_uniformLocation, i);
+}
+
+void Uniform::setFloat(float f) const
+{
+	glUniform1f(m_uniformLocation, f);
+}
+
 void Uniform::setColor(const Color& color) const
 {
 	glUniform4f(m_uniformLocation, color.getR(), color.getG(), color.getB(), color.getA());

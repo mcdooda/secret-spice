@@ -17,6 +17,8 @@ class Uniform
 		Uniform();
 		~Uniform();
 		
+		void setInt(int i) const;
+		void setFloat(float f) const;
 		void setColor(const Color& color) const;
 		void setVector2(const geometry::Vector2& vector2) const;
 		void setMatrix4(const geometry::Matrix4& matrix4) const;
