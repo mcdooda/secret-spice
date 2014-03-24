@@ -13,6 +13,7 @@
 
 // video
 #include "video/pass.h"
+#include "video/render.h"
 #include "video/color.h"
 
 // state

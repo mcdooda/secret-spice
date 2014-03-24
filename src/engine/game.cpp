@@ -8,7 +8,7 @@ Game::Game(const std::vector<std::string>& args) :
 	m_args(args)
 {
 	checkArgs();
-	video->window->open(video->window->getDesktopSize() / 2, false, true);
+	video->window->open(video->window->getDesktopSize(), true, true);
 }
 
 Game::~Game()

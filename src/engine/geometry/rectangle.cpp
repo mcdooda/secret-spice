@@ -66,9 +66,9 @@ void Rectangle::draw(video::Attribute vertexAttribute, video::Attribute uvAttrib
 		{
 			static const float uv[] = {
 				0.0f,0.0f,
-				0.0f,1.0f,
+				1.0f,0.0f,
 				1.0f,1.0f,
-				1.0f,0.0f
+				0.0f,1.0f
 			};
 			glEnableVertexAttribArray(uvAttribute);
 			glVertexAttribPointer(uvAttribute, 2, GL_FLOAT, GL_FALSE, 0, uv);

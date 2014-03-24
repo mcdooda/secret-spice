@@ -30,7 +30,7 @@ class Game : public engine::Game
 		
 		// passes
 		video::Pass levelPass;
-		video::Program renderProgram;
+		video::Render renderProgram;
 		
 		// attributes & uniforms
 		video::Attribute levelPositionAttribute;

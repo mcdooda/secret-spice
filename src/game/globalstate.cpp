@@ -10,7 +10,7 @@ void GlobalState::enter(state::Agent* agent)
 	
 	game->video->window->setTitle("BEATSHAPT");
 	
-	game->levelPass.load(game->video->window->getSize(), "rsrc/shader/levelpass.frag", "rsrc/shader/levelpass.vert");
+	game->levelPass.load(game->video->window->getSize() * 4.0f, "rsrc/shader/levelpass.frag", "rsrc/shader/levelpass.vert");
 	const video::Texture& screenTexture = game->levelPass.addOutputTexture("screen");
 	
 	game->renderProgram.load("rsrc/shader/renderprogram.frag", "rsrc/shader/renderprogram.vert");

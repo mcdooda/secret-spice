@@ -26,8 +26,8 @@ void LoadingState::update(game::Game* game)
 {
 	game->audioAnalyzer.analyzeStep();
 	
-	/*if (game->audioAnalyzer.isLoaded())
-		game->getStateMachine()->setState(new GameState());*/
+	if (game->audioAnalyzer.isLoaded())
+		game->getStateMachine()->setState(new GameState());
 }
 
 void LoadingState::draw(game::Game* game)
@@ -44,11 +44,7 @@ void LoadingState::draw(game::Game* game)
 	game->levelColorUniform.setColor(video::Color(0.5f - fmodf(game->time->getTime() * 0.2f, 0.5f)));
 	r.draw(game->levelPositionAttribute);
 	
-	game->renderProgram.use(game->video->window);
-	game->video->setClearColor(video::Color::WHITE);
-	game->video->clear();
-	geometry::Rectangle r2(geometry::Vector2(-0.9f, -0.9f), geometry::Vector2(1.8f, 1.8f));
-	r2.draw(game->renderPositionAttribute, game->renderUvAttribute);
+	game->renderProgram.draw(game->video->window);
 }
 
 void LoadingState::loadLevel(game::Game* game)
