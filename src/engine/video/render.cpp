@@ -24,9 +24,8 @@ void Render::load(std::string fragmentShader, std::string vertexShader)
 	m_uvAttribute = getAttribute("uv");
 }
 
-void Render::draw(Window* window)
+void Render::draw()
 {
-	use(window);
 	screenRectangle.draw(m_positionAttribute, m_uvAttribute);
 }
 

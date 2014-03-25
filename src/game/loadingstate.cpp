@@ -44,7 +44,10 @@ void LoadingState::draw(game::Game* game)
 	game->levelColorUniform.setColor(video::Color(0.5f - fmodf(game->time->getTime() * 0.2f, 0.5f)));
 	r.draw(game->levelPositionAttribute);
 	
-	game->renderProgram.draw(game->video->window);
+	game->renderProgram.use(game->video->window);
+	game->renderCurrentTimeUniform.setFloat(0.0f);
+	game->renderFlashValueUniform.setFloat(0.0f);
+	game->renderProgram.draw();
 }
 
 void LoadingState::loadLevel(game::Game* game)

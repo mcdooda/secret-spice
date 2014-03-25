@@ -72,10 +72,13 @@ void GameState::draw(game::Game* game)
 	float currentTime = game->time->getTime() - game->beginTime;
 	float flashDuration = 0.1f;
 	
+	float flashValue = 0.0f;
 	game->levelPass.use();
 	if (currentTime - game->lastTick < flashDuration)
-		game->video->setClearColor(video::Color((currentTime - game->lastTick) / flashDuration, 0.0f, 0.0f, 1.0f));
-	
+	{
+		flashValue = (currentTime - game->lastTick) / flashDuration;
+		game->video->setClearColor(video::Color(flashValue, 0.0f, 0.0f, 1.0f));
+	}
 	else if (game->currentSpectrum != NULL)
 	{
 		float gray = game->currentSpectrum->getMax().getY();
@@ -97,7 +100,10 @@ void GameState::draw(game::Game* game)
 	game->levelVpMatrixUniform.setMatrix4(game->interfaceView.getViewProjectionMatrix());
 	r.draw(game->levelPositionAttribute, game->levelUvAttribute);
 	
-	game->renderProgram.draw(game->video->window);
+	game->renderProgram.use(game->video->window);
+	game->renderCurrentTimeUniform.setFloat(currentTime);
+	game->renderFlashValueUniform.setFloat(flashValue);
+	game->renderProgram.draw();
 }
 
 void GameState::exit(state::Agent* agent)

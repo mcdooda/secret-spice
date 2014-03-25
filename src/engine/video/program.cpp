@@ -67,7 +67,10 @@ Attribute Program::getAttribute(std::string attributeName)
 		return it->second;
 		
 	else
+	{
+		std::cerr << "Warning: attribute '" << attributeName << "' does not exist" << std::endl;
 		return -1;
+	}
 }
 
 Uniform Program::getUniform(std::string uniformName)
@@ -78,7 +81,10 @@ Uniform Program::getUniform(std::string uniformName)
 		return it->second;
 		
 	else
+	{
+		std::cerr << "Warning: uniform '" << uniformName << "' does not exist" << std::endl;
 		return Uniform(-1);
+	}
 }
 
 void Program::addInputTexture(const Texture& inputTexture)

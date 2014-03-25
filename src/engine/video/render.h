@@ -18,7 +18,7 @@ class Render : public Program
 		
 		void load(std::string fragmentShader, std::string vertexShader);
 		
-		void draw(Window* window);
+		void draw();
 		
 	private:
 		Attribute m_positionAttribute;

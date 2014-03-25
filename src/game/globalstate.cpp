@@ -10,7 +10,7 @@ void GlobalState::enter(state::Agent* agent)
 	
 	game->video->window->setTitle("BEATSHAPT");
 	
-	game->levelPass.load(game->video->window->getSize() * 4.0f, "rsrc/shader/levelpass.frag", "rsrc/shader/levelpass.vert");
+	game->levelPass.load(game->video->window->getSize() * 2.0f, "rsrc/shader/levelpass.frag", "rsrc/shader/levelpass.vert");
 	const video::Texture& screenTexture = game->levelPass.addOutputTexture("screen");
 	
 	game->renderProgram.load("rsrc/shader/renderprogram.frag", "rsrc/shader/renderprogram.vert");
@@ -23,6 +23,8 @@ void GlobalState::enter(state::Agent* agent)
 	
 	game->renderPositionAttribute = game->renderProgram.getAttribute("position");
 	game->renderUvAttribute = game->renderProgram.getAttribute("uv");
+	game->renderCurrentTimeUniform = game->renderProgram.getUniform("currentTime");
+	game->renderFlashValueUniform = game->renderProgram.getUniform("flashValue");
 	
 	resetViews(game);
 	

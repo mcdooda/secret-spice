@@ -40,6 +40,8 @@ class Game : public engine::Game
 		
 		video::Attribute renderPositionAttribute;
 		video::Attribute renderUvAttribute;
+		video::Uniform renderCurrentTimeUniform;
+		video::Uniform renderFlashValueUniform;
 		
 		// game objects
 		Level level;
