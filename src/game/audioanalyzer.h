@@ -21,11 +21,9 @@ class AudioAnalyzer
 		
 		void setInputFileName(std::string inputFileName) { m_inputFileName = inputFileName; }
 		void loadAlgorithms();
-		void analyzeStep();
+		void analyze();
 		void computeAverageLoudness();
 		void freeAlgorithms();
-		
-		inline bool isLoaded() const { return m_loaded; }
 		
 		essentia::Real getDuration() const { return m_duration; }
 		const std::vector<essentia::Real>& getTicks() const { return m_ticks; }
@@ -36,7 +34,6 @@ class AudioAnalyzer
 		
 	private:
 		std::string m_inputFileName;
-		bool m_loaded;
 		
 		// algorithms
 		essentia::standard::Algorithm* m_frameCutterAlgorithm;

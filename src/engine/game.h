@@ -19,6 +19,9 @@
 // state
 #include "state/state.h"
 
+// thread
+#include "thread/thread.h"
+
 namespace engine
 {
 

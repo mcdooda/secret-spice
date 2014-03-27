@@ -6,8 +6,7 @@ namespace game
 
 using namespace essentia;
 
-AudioAnalyzer::AudioAnalyzer() :
-	m_loaded(false)
+AudioAnalyzer::AudioAnalyzer()
 {
 	
 }
@@ -159,17 +158,14 @@ void AudioAnalyzer::loadAlgorithms()
 	m_strongPeakAlgorithm->output("strongPeak").set(m_strongPeakValue);
 }
 
-void AudioAnalyzer::analyzeStep()
+void AudioAnalyzer::analyze()
 {
-	for (int i = 0; !m_loaded && i < 20; i++)
+	while (true)
 	{
 		m_frameCutterAlgorithm->compute();
 		
 		if (!m_frame->size())
-		{
-			m_loaded = true;
 			break;
-		}
 			
 		if (essentia::isSilent(*m_frame))
 			continue;

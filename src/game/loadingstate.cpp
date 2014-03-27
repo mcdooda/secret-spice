@@ -5,63 +5,82 @@
 namespace game
 {
 
+void LoadingState::task()
+{
+	setPriority(HIGH);
+	
+	m_audioAnalyzer->loadAlgorithms();
+	m_audioAnalyzer->analyze();
+	copy(m_audioAnalyzer->getTicks().begin(), m_audioAnalyzer->getTicks().end(), std::back_inserter(m_game->ticks));
+	loadLevel();
+	m_audioAnalyzer->freeAlgorithms();
+	m_audioAnalyzer->computeAverageLoudness();
+	
+	m_loaded = true;
+}
+
 void LoadingState::enter(state::Agent* agent)
 {
 	game::Game* game = (game::Game*) agent;
+	
 	m_frameRate = game->time->getFrameRate();
 	game->time->setNoLimitFrameRate();
 	
-	game->audioAnalyzer.setInputFileName(game->argGetString(1));
-	game->audioAnalyzer.loadAlgorithms();
+	m_game = game;
+	m_audioAnalyzer = &game->audioAnalyzer;
+	
+	m_audioAnalyzer->setInputFileName(game->argGetString(1));
+	m_loaded = false;
+	run();
 }
 
 void LoadingState::execute(state::Agent* agent)
 {
-	game::Game* game = (game::Game*) agent;
-	draw(game);
-	update(game);
+	draw();
+	update();
 }
 
-void LoadingState::update(game::Game* game)
+void LoadingState::update()
 {
-	game->audioAnalyzer.analyzeStep();
-	
-	if (game->audioAnalyzer.isLoaded())
-		game->getStateMachine()->setState(new GameState());
+	if (m_loaded)
+	{
+		wait();
+		m_game->getStateMachine()->setState(new GameState());
+	}
 }
 
-void LoadingState::draw(game::Game* game)
+void LoadingState::draw()
 {
-	game->levelPass.use();
-	game->video->setClearColor(video::Color::BLACK);
-	game->video->clear();
-	game->levelVpMatrixUniform.setMatrix4(game->view.getViewProjectionMatrix());
+	m_game->levelPass.use();
+	m_game->video->setClearColor(video::Color::BLACK);
+	m_game->video->clear();
+	m_game->levelVpMatrixUniform.setMatrix4(m_game->view.getViewProjectionMatrix());
 	geometry::Rectangle r(geometry::Vector2(-1.0f, -1.0f), geometry::Vector2(2.0f, 2.0f));
 	geometry::Matrix4 matrix4;
-	matrix4.scale(20.0f + fmodf(game->time->getTime() * 4.0f, 10.0f));
-	matrix4.rotateZ(game->time->getTime());
+	matrix4.scale(20.0f + fmodf(m_game->time->getTime() * 4.0f, 10.0f));
+	matrix4.rotateZ(m_game->time->getTime());
 	r.transform(matrix4);
-	game->levelColorUniform.setColor(video::Color(0.5f - fmodf(game->time->getTime() * 0.2f, 0.5f)));
-	r.draw(game->levelPositionAttribute);
+	m_game->levelColorUniform.setColor(video::Color(0.5f - fmodf(m_game->time->getTime() * 0.2f, 0.5f)));
+	r.draw(m_game->levelPositionAttribute);
 	
-	game->renderProgram.use(game->video->window);
-	game->renderCurrentTimeUniform.setFloat(0.0f);
-	game->renderFlashValueUniform.setFloat(0.0f);
-	game->renderProgram.draw();
+	m_game->renderProgram.use(m_game->video->window);
+	m_game->renderCurrentTimeUniform.setFloat(0.0f);
+	m_game->renderFlashValueUniform.setFloat(0.0f);
+	m_game->renderProgram.draw();
 }
 
-void LoadingState::loadLevel(game::Game* game)
+void LoadingState::loadLevel()
 {
 	video::View levelView;
 	geometry::Vector2 zero;
 	video::Color red(1.0f, 0.0f, 0.0f, 1.0f);
 	video::Color purple(1.0f, 0.0f, 1.0f, 1.0f);
 	geometry::Rectangle rectangle(geometry::Vector2(-1.0f, -1.0f), geometry::Vector2(2.0f, 2.0f));
-	essentia::Real averageLoudness = game->audioAnalyzer.getAverageLoudness();
+	essentia::Real averageLoudness = m_audioAnalyzer->getAverageLoudness();
 	float angleY = 0;
 	int i = 0;
-	int length = game->ticks.size();
-	for (std::list<essentia::Real>::iterator it = game->ticks.begin(); it != game->ticks.end(); it++)
+	int length = m_game->ticks.size();
+	for (std::list<essentia::Real>::iterator it = m_game->ticks.begin(); it != m_game->ticks.end(); it++)
 	{
 		essentia::Real tick = *it;
 		
@@ -104,10 +123,10 @@ void LoadingState::loadLevel(game::Game* game)
 		Spectrum* currentSpectrum;
 		Spectrum* nextSpectrum;
 		
-		game->audioAnalyzer.getSpectrum(prevPrevTick, &prevPrevSpectrum);
-		game->audioAnalyzer.getSpectrum(prevTick, &prevSpectrum);
-		game->audioAnalyzer.getSpectrum(tick, &currentSpectrum);
-		game->audioAnalyzer.getSpectrum(nextTick, &nextSpectrum);
+		m_audioAnalyzer->getSpectrum(prevPrevTick, &prevPrevSpectrum);
+		m_audioAnalyzer->getSpectrum(prevTick, &prevSpectrum);
+		m_audioAnalyzer->getSpectrum(tick, &currentSpectrum);
+		m_audioAnalyzer->getSpectrum(nextTick, &nextSpectrum);
 		
 		essentia::Real prevPrevLoudness = prevPrevSpectrum->getLoudness();
 		essentia::Real prevLoudness = prevSpectrum->getLoudness();
@@ -133,17 +152,17 @@ void LoadingState::loadLevel(game::Game* game)
 		bool addPlatform = loudness > averageLoudness * 0.2f;
 		
 		if (addPlatform)
-			game->level.addPlatform(Platform(r, center, angle, angleY, tick, strongPeak ? purple : red, strongPeak));
-			
+			m_game->level.addPlatform(Platform(r, center, angle, angleY, tick, strongPeak ? purple : red, strongPeak));
+		
 		else
 		{
-			it = game->ticks.erase(it);
+			it = m_game->ticks.erase(it);
 			it--;
 		}
 		
 		std::list<essentia::Real>::iterator nextIt = it;
 		nextIt++;
-		if (nextIt != game->ticks.end())
+		if (nextIt != m_game->ticks.end())
 		{
 			essentia::Real nextTick = *nextIt;
 			geometry::Vector2 move(200.0f * (nextTick - tick), 0);
@@ -156,15 +175,7 @@ void LoadingState::loadLevel(game::Game* game)
 
 void LoadingState::exit(state::Agent* agent)
 {
-	game::Game* game = (game::Game*) agent;
-	game->time->setFrameRate(m_frameRate);
-	
-	game->audioAnalyzer.freeAlgorithms();
-	game->audioAnalyzer.computeAverageLoudness();
-	
-	copy(game->audioAnalyzer.getTicks().begin(), game->audioAnalyzer.getTicks().end(), std::back_inserter(game->ticks));
-	
-	loadLevel(game);
+	m_game->time->setFrameRate(m_frameRate);
 }
 
 } // game
