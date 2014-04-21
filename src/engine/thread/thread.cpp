@@ -53,6 +53,16 @@ std::string Thread::getNewThreadName()
 	return threadName;
 }
 
+Thread::Id Thread::getId()
+{
+	return SDL_GetThreadID(m_thread);
+}
+
+Thread::Id Thread::getCurrentId()
+{
+	return SDL_GetThreadID(NULL);
+}
+
 } // thread
 } // engine
 

@@ -24,6 +24,7 @@ class Thread
 			NORMAL = SDL_THREAD_PRIORITY_NORMAL,
 			HIGH = SDL_THREAD_PRIORITY_HIGH
 		};
+		typedef SDL_threadID Id;
 		
 	public:
 		Thread();
@@ -34,6 +35,9 @@ class Thread
 		void run();
 		void wait();
 		void setPriority(Priority priority);
+		
+		Id getId();
+		static Id getCurrentId();
 		
 		friend int runTask(void* thread);
 		
