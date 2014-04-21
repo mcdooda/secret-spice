@@ -60,7 +60,7 @@ Thread::Id Thread::getId()
 
 Thread::Id Thread::getCurrentId()
 {
-	return SDL_GetThreadID(NULL);
+	return SDL_ThreadID();
 }
 
 } // thread
