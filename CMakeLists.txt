@@ -1,23 +1,26 @@
 cmake_minimum_required(VERSION 2.6)
 
-project(beatshapt)
+project(secret-spice)
 
 file(
     GLOB_RECURSE
     src
     src/*
+    flat/src/*
 )
+
+include_directories(flat/src)
 
 set(CMAKE_CXX_FLAGS "-g -Wall -O0")
 #set(CMAKE_CXX_FLAGS "-O3")
 
 add_executable(
-    beatshapt
+    secret-spice
     ${src}
 )
 
 target_link_libraries(
-    beatshapt
+    secret-spice
     SDL2
     SDL2_image
     SDL2_mixer
